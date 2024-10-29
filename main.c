@@ -1,7 +1,17 @@
-#include <stdio.h>
+#include <ncurses.h>
 
-int main(int argc, char const *argv[])
+int main()
 {
-    printf("hello");
+    initscr();
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+
+    int row, col;
+    getmaxyx(stdscr, row, col);
+    mvprintw(row / 2, (col - 12) / 2, "Hello, World!");
+    refresh();
+    getch();
+    endwin();
     return 0;
 }
