@@ -117,7 +117,6 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
     // free the memory allocated/reserved by every item
     for (int i = 0; i < itemsLength; ++i)
     {
-
         free_item(items[i]);
     }
     // free the memory allocated/reserved by the array

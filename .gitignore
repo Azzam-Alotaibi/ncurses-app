@@ -57,3 +57,4 @@ dkms.conf
 
 # Ignore test.c file
 test.c
+test2.c
