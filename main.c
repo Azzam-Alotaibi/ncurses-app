@@ -4,6 +4,9 @@
 #include <string.h>
 #include <stdbool.h>
 
+void cleanup_menu(MENU *menu, ITEM **items, int itemsLength);
+void destroy_win(WINDOW *localWindow);
+
 int main()
 {
     // The convention in C is has generally been to declare all such local variables at the top of a function [1]
@@ -126,6 +129,7 @@ int main()
     }
 
     wgetch(windowMain);
+    destroy_win(windowMain);
     endwin();
     return 0;
 }
@@ -145,4 +149,17 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
     }
     // free the memory allocated/reserved by the array
     free(items);
+}
+
+void destroy_win(WINDOW *localWindow)
+{
+    /* box(local_win, ' ', ' '); : This won't produce the desired
+     * result of erasing the window. It will leave its four corners
+     * and so an ugly remnant of window. [2]
+     */
+    // so we have to use wborder()
+    wborder(localWindow, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+
+    wrefresh(localWindow);
+    delwin(localWindow);
 }
