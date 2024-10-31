@@ -89,10 +89,10 @@ int main()
             {
                 cleanup_menu(menu, items, choicesLength);
                 isRunning = false;
-                refresh();
+                mvprintw(5, 5, "Comeback later!");
             }
-            mvprintw(5, 5, "Comeback later !");
             // TODO menu selection
+
             break;
         case 'q':
             cleanup_menu(menu, items, choicesLength);
