@@ -69,6 +69,7 @@ int main()
             {
                 // If on the first item, wrap to the last item
                 menu_driver(menu, REQ_LAST_ITEM);
+                break;
             }
             // moves upwards in the list
             menu_driver(menu, REQ_UP_ITEM);
