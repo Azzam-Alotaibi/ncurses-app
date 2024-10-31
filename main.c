@@ -2,6 +2,7 @@
 #include <menu.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 int main()
 {
@@ -43,11 +44,12 @@ int main()
     refresh();
 
     int input;
-
+    bool isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
     // q for quitting
-    while ((input = getch()) != 'q')
+    while (isRunning)
     {
+        input = getch();
         // returns the position of the selected item
         const char *currentItemName;
         currentItemName = item_name(current_item(menu));
@@ -83,10 +85,18 @@ int main()
             menu_driver(menu, REQ_FIRST_ITEM);
             break;
         case 10: // 10 is the enter key for getch()
-            mvprintw(20, 0, "Item selected is : %s",
-                     item_name(current_item(menu)));
+            if (strcmp(currentItemName, "Exit") == 0)
+            {
+                cleanup_menu(menu, items, choicesLength);
+                isRunning = false;
+                refresh();
+            }
+            mvprintw(5, 5, "Comeback later !");
             // TODO menu selection
             break;
+        case 'q':
+            cleanup_menu(menu, items, choicesLength);
+            isRunning = false;
         }
         refresh();
     }
@@ -94,4 +104,22 @@ int main()
     getch();
     endwin();
     return 0;
+}
+
+// clean the menu to stop the memory leak
+void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
+{
+    // hide the menu from the screen
+    unpost_menu(menu);
+    // free the memory allocated/reserved by the menu
+    free_menu(menu);
+
+    // free the memory allocated/reserved by every item
+    for (int i = 0; i < itemsLength; ++i)
+    {
+
+        free_item(items[i]);
+    }
+    // free the memory allocated/reserved by the array
+    free(items);
 }
