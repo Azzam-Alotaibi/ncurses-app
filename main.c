@@ -43,6 +43,8 @@ int main()
     refresh();
 
     int input;
+
+    // this is responsible for the menu navigation using menu_driver()
     // q for quitting
     while ((input = getch()) != 'q')
     {
