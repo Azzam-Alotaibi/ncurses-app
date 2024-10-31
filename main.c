@@ -27,7 +27,7 @@ int main()
     // the cruses mode has to be initialized before calling the new_menu()
     initscr();
 
-    // *APP DECISION 1-4* in the word file
+    // *APP DECISIONS 1-4* in the word file
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
