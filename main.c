@@ -6,16 +6,25 @@
 
 int main()
 {
+    // The convention in C is has generally been to declare all such local variables at the top of a function [1]
+    WINDOW *windowMain;
+    MENU *menu;
+    ITEM **items;
+    int startx, starty, height, width;
+    int choicesLength;
+    bool isRunning;
+    int input;
+
     // NULL is needed for new_menu() to work. and it's considered best practice
     const char *choices[] = {"Edit File", "Copy File", "Delete File", "Exit", NULL};
 
     // takes the size of the array and divide it by the first elements to get the full length without the NULL
-    int choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+    choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
 
     // create an array pointer to an ITEM pointer and reserve the memory using calloc (contiguous allocation),
     // while casting the return type to a pointer to an item pointer
     // adds one cause of the NULL isn't calculated in the length
-    ITEM **items = (ITEM **)calloc(choicesLength + 1, sizeof(ITEM *));
+    items = (ITEM **)calloc(choicesLength + 1, sizeof(ITEM *));
 
     // create a new item out of every choice
     for (int i = 0; i < choicesLength; i++)
@@ -34,22 +43,37 @@ int main()
     noecho();
     keypad(stdscr, TRUE);
 
+    height = 20;
+    width = 50;
+    starty = (LINES - height) / 2;
+    startx = (COLS - width) / 2;
+    windowMain = newwin(height, width, starty, startx);
+    wrefresh(windowMain);
+    box(windowMain, 0, 0);
+
+    keypad(windowMain, TRUE);
+
     // create the menu from the items array while casting the return type to a pointer to an item pointer
-    MENU *menu = new_menu((ITEM **)items);
+    menu = new_menu((ITEM **)items);
+
+    // set the main window for the menu
+    set_menu_win(menu, windowMain);
+
+    // create a sub-window for items and aling it within the box using derwin() [3]
+    set_menu_sub(menu, derwin(windowMain, choicesLength, height - 1, 1, 2));
 
     // to show the menu to the screen
     post_menu(menu);
 
     // refresh the stdsc
-    refresh();
+    wrefresh(windowMain);
 
-    int input;
-    bool isRunning = true;
+    isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
     // q for quitting
     while (isRunning)
     {
-        input = getch();
+        input = wgetch(windowMain);
         // returns the position of the selected item
         const char *currentItemName;
         currentItemName = item_name(current_item(menu));
@@ -89,7 +113,7 @@ int main()
             {
                 cleanup_menu(menu, items, choicesLength);
                 isRunning = false;
-                mvprintw(5, 5, "Comeback later!");
+                mvwprintw(windowMain, 5, 5, "Comeback later!");
             }
             // TODO menu selection
 
@@ -98,10 +122,10 @@ int main()
             cleanup_menu(menu, items, choicesLength);
             isRunning = false;
         }
-        refresh();
+        wrefresh(windowMain);
     }
 
-    getch();
+    wgetch(windowMain);
     endwin();
     return 0;
 }
