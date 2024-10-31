@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <menu.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main()
 {
@@ -46,12 +47,13 @@ int main()
     while ((input = getch()) != 'q')
     {
         // returns the position of the selected item
-        int currentIndex = item_index(current_item(menu));
+        const char *currentItemName;
+        currentItemName = item_name(current_item(menu));
 
         switch (input)
         {
         case KEY_DOWN:
-            if (current_item == choicesLength - 1)
+            if (strcmp(currentItemName, choices[choicesLength - 1]) == 0)
             {
                 // If on the last item, wrap to the first item hehe
                 menu_driver(menu, REQ_FIRST_ITEM);
@@ -61,7 +63,7 @@ int main()
             menu_driver(menu, REQ_DOWN_ITEM);
             break;
         case KEY_UP:
-            if (current_item == 0)
+            if (strcmp(currentItemName, choices[0]) == 0)
             {
                 // If on the first item, wrap to the last item
                 menu_driver(menu, REQ_LAST_ITEM);
@@ -78,7 +80,8 @@ int main()
             menu_driver(menu, REQ_FIRST_ITEM);
             break;
         case 10: // 10 is the enter key for getch()
-
+            mvprintw(20, 0, "Item selected is : %s",
+                     item_name(current_item(menu)));
             // TODO menu selection
             break;
         }
