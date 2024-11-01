@@ -38,6 +38,7 @@
 main
 test
 test2
+app
 
 # Debug files
 *.dSYM/
