@@ -4,11 +4,14 @@
 #include <string.h>
 #include <stdbool.h>
 
+// The convention in C is has generally been to declare all such local variables at the top of a function [1]
+
 void cleanup_menu(MENU *menu, ITEM **items, int itemsLength);
 void destroy_win(WINDOW *localWindow);
 void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices);
 void setup_window(WINDOW **windowMain, MENU **menu, int choicesLength);
 int edit_page(WINDOW *windowMain);
+void init_ncruses();
 
 int main()
 {
@@ -28,14 +31,7 @@ int main()
     // takes the size of the array and divide it by the first elements to get the full length without the NULL
     choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
 
-    // initializing the curses mode.
-    // the cruses mode has to be initialized before calling the new_menu()
-    initscr();
-
-    // *APP DECISIONS 1-4* in the word file
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
+    init_ncruses();
 
     // for setting up the menu, items. and we only send choices wihtout adressing the pointer because C automatically sends the first element's pointer
     setup_menu(&menu, &items, choicesLength, choices);
@@ -46,7 +42,8 @@ int main()
     isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
     // q for quitting
-    // todo extract the while to another function which accepts a function as an argument for the enter key
+    // TODO to reduce redundancy, this while loop have to be extracted another function which accepts a function as an argument so it can be called in the case 10 section
+    // TODO use a funciton pointer type to do that
     while (isRunning)
     {
         input = wgetch(windowMain);
@@ -91,14 +88,15 @@ int main()
             menu_driver(menu, REQ_FIRST_ITEM);
             break;
         case 10: // 10 is the enter key for getch()
-            cleanup_menu(menu, items, choicesLength);
-            destroy_win(windowMain);
             if (strcmp(currentItemName, "Exit") == 0)
             {
                 isRunning = false;
+                cleanup_menu(menu, items, choicesLength);
                 mvwprintw(windowMain, 5, 5, "Comeback later!");
                 break;
             }
+            cleanup_menu(menu, items, choicesLength);
+            destroy_win(windowMain);
             if (strcmp(currentItemName, "Edit File") == 0)
             {
                 edit_page(windowMain);
@@ -114,8 +112,8 @@ int main()
 
             break;
         case 'q':
-            cleanup_menu(menu, items, choicesLength);
             isRunning = false;
+            cleanup_menu(menu, items, choicesLength);
             mvwprintw(windowMain, 5, 5, "Comeback later!");
             break;
         }
@@ -127,6 +125,18 @@ int main()
     destroy_win(windowMain);
     endwin();
     return 0;
+}
+
+// initializing the curses mode with basic settings.
+void init_ncruses()
+{
+
+    initscr();
+
+    // *APP DECISIONS 1-4* in the word file
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
 }
 
 int edit_page(WINDOW *windowMain)
@@ -144,15 +154,6 @@ int edit_page(WINDOW *windowMain)
     // takes the size of the array and divide it by the first elements to get the full length without the NULL
     choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
 
-    // initializing the curses mode.
-    // the cruses mode has to be initialized before calling the new_menu()
-    initscr();
-
-    // *APP DECISIONS 1-4* in the word file
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-
     // for setting up the menu, items. and we only send choices wihtout adressing the pointer because C automatically sends the first element's pointer
     setup_menu(&menu, &items, choicesLength, choices);
 
@@ -162,6 +163,7 @@ int edit_page(WINDOW *windowMain)
     isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
     // q for quitting
+
     while (isRunning)
     {
         input = wgetch(windowMain);
@@ -247,6 +249,9 @@ void destroy_win(WINDOW *localWindow)
     delwin(localWindow);
 }
 
+// *APP DECISIONS 6* in the word file
+// this function sets up a new *MENU, and an array of *ITEM using the *choices array. It updates the variables using the pointers given so no need to return any value
+
 void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices)
 {
     // create an array pointer to an ITEM pointer and reserve the memory using calloc (contiguous allocation),
@@ -284,8 +289,8 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
     }
 }
 
-// *APP DECISIONS 6* in the word file
-// this function updates the variables using pointer
+// *APP DECISIONS 7* in the word file
+// this function sets up a new *WINDOW, using the *MENU provided in the argument. It updates the variables using the pointers given so no need to return any value
 void setup_window(WINDOW **windowMain, MENU **menu, int choicesLength)
 {
 
