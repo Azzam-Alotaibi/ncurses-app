@@ -16,12 +16,12 @@ void init_ncruses()
 // clean the menu to prevent the memory leak
 void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
 {
-    // hide the menu from the screen
+    // hide the menu from the screen [5]
     unpost_menu(menu);
-    // free the memory allocated/reserved by the menu
+    // free the memory allocated/reserved by the menu [5]
     free_menu(menu);
 
-    // free the memory allocated/reserved by every item
+    // free the memory allocated/reserved by every item [5]
     for (int i = 0; i < itemsLength; ++i)
     {
         free_item(items[i]);
@@ -32,6 +32,7 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
 
 void destroy_win(WINDOW *localWindow)
 {
+    // [7]
     delwin(localWindow);
     wrefresh(localWindow);
 }
@@ -42,7 +43,7 @@ void destroy_win(WINDOW *localWindow)
 void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices)
 {
     // create an array pointer to an ITEM pointer and reserve the memory using calloc (contiguous allocation),
-    // while casting the return type to a pointer to an item pointer
+    // while casting the return type to a pointer to an item pointer [6]
     // adds one cause of the NULL isn't calculated in the length
     *items = (ITEM **)calloc(choicesLength + 1, sizeof(ITEM *));
     if (items == NULL)
@@ -54,6 +55,8 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
     // create a new item out of every choice
     for (int i = 0; i < choicesLength; i++)
     {
+        // we have to derefrence the items array pointer first then create an item in the ith element
+        // also the null is passed here since we don't need a description for our items
         (*items)[i] = new_item(choices[i], NULL);
         if (items[i] == NULL)
         {
@@ -62,10 +65,9 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
         }
     }
 
-    // assign NULL to the end of the array for new_menu()
-    // we need *items to be between parantheses so we ensure the correct order of operations
-    // without it, it won't consider *items an array and will access the [*choicesLength]th element of a single item
-    (*items)[choicesLength] = (ITEM *)NULL;
+    // we have to derefrence the items array pointer first then,
+    // assign NULL to the end of the array so the new_menu() knows where to stop.
+    (*items)[choicesLength] = NULL;
 
     // crate a new meun using the items list
     *menu = new_menu(*items);

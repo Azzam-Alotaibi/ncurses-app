@@ -5,11 +5,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-// make a recursive function
 int main()
 {
     // The convention in C is has generally been to declare all such local variables at the top of a function [1]
     // *APP DECISIONS 5* in the word file
+    // [6]
     WINDOW *windowMain;
     MENU *menu;
     ITEM **items;
@@ -54,29 +54,29 @@ int main()
         case KEY_DOWN:
             if (strcmp(currentItemName, choices[choicesLength - 1]) == 0)
             {
-                // If on the last item, wrap to the first item hehe
+                // If on the last item, wrap to the first item [4]
                 menu_driver(menu, REQ_FIRST_ITEM);
                 break;
             }
-            // moves downards in the list
+            // moves downards in the list [4]
             menu_driver(menu, REQ_DOWN_ITEM);
             break;
         case KEY_UP:
             if (strcmp(currentItemName, choices[0]) == 0)
             {
-                // If on the first item, wrap to the last item
+                // If on the first item, wrap to the last item [4]
                 menu_driver(menu, REQ_LAST_ITEM);
                 break;
             }
-            // moves upwards in the list
+            // moves upwards in the list [4]
             menu_driver(menu, REQ_UP_ITEM);
             break;
         case KEY_RIGHT:
-            // moves to the last item
+            // moves to the last item [4]
             menu_driver(menu, REQ_LAST_ITEM);
             break;
         case KEY_LEFT:
-            // moves to the first item
+            // moves to the first item [4]
             menu_driver(menu, REQ_FIRST_ITEM);
             break;
         case 10: // 10 is the enter key for getch()
@@ -119,6 +119,7 @@ int main()
     return 0;
 }
 
+// TODO make a recursive function
 void super_duper_recursion() {}
 
 void edit_page(WINDOW *windowMain)
