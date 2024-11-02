@@ -1,5 +1,6 @@
 #include "menu_handler.h"
 #include <stdlib.h>
+#include <string.h>
 
 // initializing the curses mode with basic settings.
 void init_ncruses()
@@ -42,9 +43,7 @@ void destroy_win(WINDOW *localWindow)
 
 void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices)
 {
-    // create an array pointer to an ITEM pointer and reserve the memory using calloc (contiguous allocation),
-    // while casting the return type to a pointer to an item pointer [6]
-    // adds one cause of the NULL isn't calculated in the length
+
     *items = (ITEM **)calloc(choicesLength + 1, sizeof(ITEM *));
     if (items == NULL)
     {
@@ -55,8 +54,8 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
     // create a new item out of every choice
     for (int i = 0; i < choicesLength; i++)
     {
-        // we have to derefrence the items array pointer first then create an item in the ith element
-        // also the null is passed here since we don't need a description for our items
+        // create an item in the ith element
+        // the null is passed here since we don't need a description for our items
         (*items)[i] = new_item(choices[i], NULL);
         if (items[i] == NULL)
         {
@@ -65,7 +64,6 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
         }
     }
 
-    // we have to derefrence the items array pointer first then,
     // assign NULL to the end of the array so the new_menu() knows where to stop.
     (*items)[choicesLength] = NULL;
 
@@ -107,4 +105,110 @@ void setup_window(WINDOW **windowMain, MENU **menu, int choicesLength)
     // to show the menu to the screen
     post_menu(*menu);
     wrefresh(*windowMain);
+}
+
+void clean_exit(WINDOW *windowMain)
+{
+    mvwprintw(windowMain, 5, 5, "Comeback later!");
+    wgetch(windowMain);
+    endwin();
+    exit(0);
+}
+
+// pages
+_Bool main_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+{
+    if (strcmp(currentItemName, "Exit") == 0)
+    {
+        clean_exit(windowMain);
+    }
+    if (strcmp(currentItemName, "Choose File") == 0)
+    {
+        const char *choices[] = {"Edit File", "Copy File", "Delete File", "Go Back", NULL};
+
+        // takes the size of the array and divide it by the first elements to get the full length without the NULL
+        choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+
+        // [8]
+        EnterKeyHandler function = choose_file_page;
+        super_duper_recursion(function, choicesLength, choices);
+    }
+    else if (strcmp(currentItemName, "Create File") == 0)
+    {
+    }
+    else if (strcmp(currentItemName, "Show Log") == 0)
+    {
+        const char *choices[] = {"In The Terminal", "As A Text File", "Go Back", NULL};
+
+        // takes the size of the array and divide it by the first elements to get the full length without the NULL
+        choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+
+        // [8]
+        EnterKeyHandler function = choose_file_page;
+        super_duper_recursion(function, choicesLength, choices);
+    }
+    return true;
+}
+
+_Bool choose_file_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+{
+    if (strcmp(currentItemName, "Go Back") == 0)
+    {
+        return false;
+    }
+    if (strcmp(currentItemName, "Edit File") == 0)
+    {
+        const char *choices[] = {"Append Line", "Insert Line", "Delete Line", "Show Line", "Go Back", NULL};
+
+        // takes the size of the array and divide it by the first elements to get the full length without the NULL
+        choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+
+        // [8]
+        EnterKeyHandler function = edit_file_page;
+        super_duper_recursion(function, choicesLength, choices);
+    }
+    // TODO copy/delete file
+    else if (strcmp(currentItemName, "Copy File") == 0)
+    {
+    }
+    else if (strcmp(currentItemName, "Delete File") == 0)
+    {
+    }
+    return true;
+}
+
+_Bool edit_file_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+{
+    if (strcmp(currentItemName, "Go Back") == 0)
+    {
+        return false;
+    }
+    // TODO append/insert/delete/show line
+
+    else if (strcmp(currentItemName, "Copy File") == 0)
+    {
+    }
+    else if (strcmp(currentItemName, "Delete File") == 0)
+    {
+    }
+
+    return true;
+}
+
+_Bool show_log_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+{
+    if (strcmp(currentItemName, "Go Back") == 0)
+    {
+        return false;
+    }
+
+    // TODO in the terminal/as a text file
+    else if (strcmp(currentItemName, "In The Terminal") == 0)
+    {
+    }
+    else if (strcmp(currentItemName, "As A Text File") == 0)
+    {
+    }
+
+    return true;
 }
