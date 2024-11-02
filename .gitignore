@@ -39,6 +39,7 @@ main
 test
 test2
 app
+test3
 
 # Debug files
 *.dSYM/
@@ -61,3 +62,4 @@ dkms.conf
 # Ignore test.c file
 test.c
 test2.c
+test3.c
