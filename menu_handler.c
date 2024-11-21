@@ -57,7 +57,7 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
         // create an item in the ith element
         // the null is passed here since we don't need a description for our items
         (*items)[i] = new_item(choices[i], NULL);
-        if (items[i] == NULL)
+        if ((*items)[i] == NULL)
         {
             perror("Failed to create menu item");
             exit(EXIT_FAILURE);
@@ -69,7 +69,7 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
 
     // crate a new meun using the items list
     *menu = new_menu(*items);
-    if (menu == NULL)
+    if (*menu == NULL)
     {
         perror("Failed to create menu");
         exit(EXIT_FAILURE);
