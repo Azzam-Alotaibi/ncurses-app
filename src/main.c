@@ -19,6 +19,7 @@ int main()
 
     init_ncruses();
 
+    // setting the function pointer to the main page functionality
     EnterKeyHandler main_pg = main_page;
     super_duper_recursion(main_pg, choicesLength, choices);
 }

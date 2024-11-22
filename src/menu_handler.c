@@ -185,13 +185,6 @@ _Bool edit_file_page(WINDOW *windowMain, int choicesLength, const char *currentI
     }
     // TODO append/insert/delete/show line
 
-    else if (strcmp(currentItemName, "Copy File") == 0)
-    {
-    }
-    else if (strcmp(currentItemName, "Delete File") == 0)
-    {
-    }
-
     return true;
 }
 
