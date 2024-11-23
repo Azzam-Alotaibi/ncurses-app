@@ -28,7 +28,6 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
 {
     // The convention in C is has generally been to declare all such local variables at the top of a function [1]
     // *APP DECISIONS 5* in the word file
-    WINDOW *windowMain;
     MENU *menu;
     ITEM **items;
     bool isRunning;
@@ -41,7 +40,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
     setup_menu(&menu, &items, choicesLength, choices);
 
     // for setting up the window.
-    setup_window(&windowMain, &menu, choicesLength);
+    setup_window_menu(&windowMain, &menu, choicesLength);
 
     isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
@@ -85,15 +84,15 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             break;
         case 10: // 10 is the enter key for wgetch() / getch()
             cleanup_menu(menu, items, choicesLength);
-            destroy_win(windowMain);
+            destroy_win();
 
-            isRunning = enterKeyHandler(windowMain, choicesLength, currentItemName);
+            isRunning = enterKeyHandler(choicesLength, currentItemName);
 
             // for setting up the menu, items. and we only send choices wihtout adressing the pointer because C automatically sends the first element's pointer
             setup_menu(&menu, &items, choicesLength, choices);
 
             // for setting up the window.
-            setup_window(&windowMain, &menu, choicesLength);
+            setup_window_menu(&windowMain, &menu, choicesLength);
             break;
         case 'q':
             cleanup_menu(menu, items, choicesLength);
@@ -102,4 +101,22 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
         }
         wrefresh(windowMain);
     }
+}
+void operation_file(char *operationName)
+{
+
+    // ! old windowMain isn't deleted when creating this menu?
+    setup_window(&windowMain);
+
+    // [9]
+    char str[80];
+    // Move cursor to (1,1) and print prompt
+    mvwprintw(windowMain, 1, 1, "Enter a string: ");
+    echo();
+    wgetstr(windowMain, str);
+    noecho();
+    // ! UI overflow bug
+    mvwprintw(windowMain, 1, 2, "\nYou entered: %s\n", str);
+    wrefresh(windowMain);
+    wgetch(windowMain);
 }

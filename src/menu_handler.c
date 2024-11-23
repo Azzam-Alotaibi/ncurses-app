@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// global variable
+WINDOW *windowMain;
+
 // initializing the curses mode with basic settings.
 void init_ncruses()
 {
@@ -31,11 +34,11 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
     free(items);
 }
 
-void destroy_win(WINDOW *localWindow)
+void destroy_win()
 {
     // [7]
-    delwin(localWindow);
-    wrefresh(localWindow);
+    delwin(windowMain);
+    wrefresh(windowMain);
 }
 
 // *APP DECISIONS 6* in the word file
@@ -78,7 +81,7 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
 
 // *APP DECISIONS 7* in the word file
 // this function sets up a new *WINDOW, using the *MENU provided in the argument. It updates the variables using the pointers given so no need to return any value
-void setup_window(WINDOW **windowMain, MENU **menu, int choicesLength)
+void setup_window_menu(WINDOW **windowMain, MENU **menu, int choicesLength)
 {
 
     // height and width in characters for the window
@@ -107,6 +110,26 @@ void setup_window(WINDOW **windowMain, MENU **menu, int choicesLength)
     wrefresh(*windowMain);
 }
 
+void setup_window(WINDOW **windowMain)
+{
+    // height and width in characters for the window
+    int height = 10;
+    int width = 20;
+
+    // center the window
+    // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
+    int starty = (LINES - height) / 2;
+    int startx = (COLS - width) / 2;
+
+    // create a new window with the assigned attributes
+    *windowMain = newwin(height, width, starty, startx);
+    // create a box around the window as a border
+    box(*windowMain, 0, 0);
+    keypad(*windowMain, TRUE);
+
+    wrefresh(*windowMain);
+}
+
 void clean_exit(WINDOW *windowMain)
 {
     mvwprintw(windowMain, 5, 5, "Comeback later!");
@@ -116,7 +139,7 @@ void clean_exit(WINDOW *windowMain)
 }
 
 // pages
-_Bool main_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+_Bool main_page(int choicesLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Exit") == 0)
     {
@@ -150,7 +173,7 @@ _Bool main_page(WINDOW *windowMain, int choicesLength, const char *currentItemNa
     return true;
 }
 
-_Bool choose_file_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+_Bool choose_file_page(int choicesLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Go Back") == 0)
     {
@@ -170,6 +193,7 @@ _Bool choose_file_page(WINDOW *windowMain, int choicesLength, const char *curren
     // TODO copy/delete file
     else if (strcmp(currentItemName, "Copy File") == 0)
     {
+        operation_file("Copy");
     }
     else if (strcmp(currentItemName, "Delete File") == 0)
     {
@@ -177,7 +201,7 @@ _Bool choose_file_page(WINDOW *windowMain, int choicesLength, const char *curren
     return true;
 }
 
-_Bool edit_file_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+_Bool edit_file_page(int choicesLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Go Back") == 0)
     {
@@ -188,7 +212,7 @@ _Bool edit_file_page(WINDOW *windowMain, int choicesLength, const char *currentI
     return true;
 }
 
-_Bool show_log_page(WINDOW *windowMain, int choicesLength, const char *currentItemName)
+_Bool show_log_page(int choicesLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Go Back") == 0)
     {
