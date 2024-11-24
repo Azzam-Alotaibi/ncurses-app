@@ -12,6 +12,7 @@ int fileCopy(char filePath[], char destination[])
     in = fopen(filePath, "r");
     if (in == NULL)
     {
+        // [10]
         if (errno == ENOENT)
             return ERR_FILE_NOT_FOUND;
         if (errno == EACCES)

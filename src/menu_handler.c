@@ -4,6 +4,10 @@
 
 // global variable
 WINDOW *windowMain;
+const int HEIGHT_MENU = 20;
+const int WIDTH_MENU = 50;
+const int HEIGHT_OPERATION = 20;
+const int WIDTH_OPERATION = 70;
 
 // initializing the curses mode with basic settings.
 void init_ncruses()
@@ -37,8 +41,9 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
 void destroy_win()
 {
     // [7]
-    delwin(windowMain);
+    wborder(windowMain, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
     wrefresh(windowMain);
+    delwin(windowMain);
 }
 
 // *APP DECISIONS 6* in the word file
@@ -81,53 +86,46 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
 
 // *APP DECISIONS 7* in the word file
 // this function sets up a new *WINDOW, using the *MENU provided in the argument. It updates the variables using the pointers given so no need to return any value
-void setup_window_menu(WINDOW **windowMain, MENU **menu, int choicesLength)
+void setup_window_menu(MENU **menu, int choicesLength)
 {
-
-    // height and width in characters for the window
-    int height = 20;
-    int width = 50;
 
     // center the window
     // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
-    int starty = (LINES - height) / 2;
-    int startx = (COLS - width) / 2;
+    int starty = (LINES - HEIGHT_MENU) / 2;
+    int startx = (COLS - WIDTH_MENU) / 2;
 
     // create a new window with the assigned attributes
-    *windowMain = newwin(height, width, starty, startx);
+    windowMain = newwin(HEIGHT_MENU, WIDTH_MENU, starty, startx);
     // create a box around the window as a border
-    box(*windowMain, 0, 0);
-    keypad(*windowMain, TRUE);
+    box(windowMain, 0, 0);
+    keypad(windowMain, TRUE);
 
     // set the main window for the menu
-    set_menu_win(*menu, *windowMain);
+    set_menu_win(*menu, windowMain);
 
     // create a sub-window for items and aling it within the box using derwin() [3]
-    set_menu_sub(*menu, derwin(*windowMain, choicesLength, height - 1, 1, 2));
+    set_menu_sub(*menu, derwin(windowMain, choicesLength, HEIGHT_MENU - 1, 1, 2));
 
     // to show the menu to the screen
     post_menu(*menu);
-    wrefresh(*windowMain);
+    wrefresh(windowMain);
 }
 
-void setup_window(WINDOW **windowMain)
+void setup_window_operation()
 {
-    // height and width in characters for the window
-    int height = 10;
-    int width = 20;
 
     // center the window
     // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
-    int starty = (LINES - height) / 2;
-    int startx = (COLS - width) / 2;
+    int starty = (LINES - HEIGHT_OPERATION) / 2;
+    int startx = (COLS - WIDTH_OPERATION) / 2;
 
     // create a new window with the assigned attributes
-    *windowMain = newwin(height, width, starty, startx);
+    windowMain = newwin(HEIGHT_OPERATION, WIDTH_OPERATION, starty, startx);
     // create a box around the window as a border
-    box(*windowMain, 0, 0);
-    keypad(*windowMain, TRUE);
+    box(windowMain, 0, 0);
+    keypad(windowMain, TRUE);
 
-    wrefresh(*windowMain);
+    wrefresh(windowMain);
 }
 
 void clean_exit(WINDOW *windowMain)

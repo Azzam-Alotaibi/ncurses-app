@@ -40,7 +40,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
     setup_menu(&menu, &items, choicesLength, choices);
 
     // for setting up the window.
-    setup_window_menu(&windowMain, &menu, choicesLength);
+    setup_window_menu(&menu, choicesLength);
 
     isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
@@ -92,7 +92,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             setup_menu(&menu, &items, choicesLength, choices);
 
             // for setting up the window.
-            setup_window_menu(&windowMain, &menu, choicesLength);
+            setup_window_menu(&menu, choicesLength);
             break;
         case 'q':
             cleanup_menu(menu, items, choicesLength);
@@ -105,8 +105,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
 void operation_file(char *operationName)
 {
 
-    // ! old windowMain isn't deleted when creating this menu?
-    setup_window(&windowMain);
+    setup_window_operation();
 
     // [9]
     char str[80];
@@ -115,8 +114,15 @@ void operation_file(char *operationName)
     echo();
     wgetstr(windowMain, str);
     noecho();
-    // ! UI overflow bug
+    // ! the text overrides the borders??
     mvwprintw(windowMain, 1, 2, "\nYou entered: %s\n", str);
     wrefresh(windowMain);
     wgetch(windowMain);
+
+    destroy_win();
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    refresh();
 }
