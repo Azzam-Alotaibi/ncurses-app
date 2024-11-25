@@ -9,6 +9,7 @@
 // global variables
 // we decided to let windowMain a global variable since it's literally used across the app and passing it on ever function call doesn't make sense anymore.
 extern WINDOW *windowMain;
+extern WINDOW *windowBorder;
 extern const int HEIGHT_MENU;
 extern const int WIDTH_MENU;
 extern const int HEIGHT_OPERATION;

@@ -96,7 +96,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             break;
         case 'q':
             cleanup_menu(menu, items, choicesLength);
-            clean_exit(windowMain);
+            clean_exit();
             break;
         }
         wrefresh(windowMain);
@@ -109,13 +109,17 @@ void operation_file(char *operationName)
 
     // [9]
     char str[80];
-    // Move cursor to (1,1) and print prompt
-    mvwprintw(windowMain, 1, 1, "Enter a string: ");
+    // Move cursor to (0,0) and print prompt the following prompt
+    mvwprintw(windowMain, 0, 0, "Enter a string: ");
+
+    // enabling echo to make the user type more than one charecter
     echo();
+    // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, str);
     noecho();
-    // ! the text overrides the borders??
-    mvwprintw(windowMain, 1, 2, "\nYou entered: %s\n", str);
+
+    // debugging purposes
+    mvwprintw(windowMain, 0, 0, "You entered: %s\n", str);
     wrefresh(windowMain);
     wgetch(windowMain);
 

@@ -4,6 +4,7 @@
 
 // global variable
 WINDOW *windowMain;
+WINDOW *windowBorder;
 const int HEIGHT_MENU = 20;
 const int WIDTH_MENU = 50;
 const int HEIGHT_OPERATION = 20;
@@ -119,19 +120,27 @@ void setup_window_operation()
     int starty = (LINES - HEIGHT_OPERATION) / 2;
     int startx = (COLS - WIDTH_OPERATION) / 2;
 
+    // the app will always override the borders by the user inputs, in order to solve that this window is created which is +2 pixels wider and higher
+    // than the main window and set its position -1 in both x and y axis to show the borders. so now the borders are in completely different window
+    // than the user inputs.
+    windowBorder = newwin(HEIGHT_OPERATION + 2, WIDTH_OPERATION + 2, starty - 1, startx - 1);
+    box(windowBorder, 0, 0);
+    wrefresh(windowBorder);
+    delwin(windowBorder);
+
     // create a new window with the assigned attributes
     windowMain = newwin(HEIGHT_OPERATION, WIDTH_OPERATION, starty, startx);
     // create a box around the window as a border
-    box(windowMain, 0, 0);
+    // box(windowMain, 0, 0);
     keypad(windowMain, TRUE);
 
     wrefresh(windowMain);
 }
 
-void clean_exit(WINDOW *windowMain)
+void clean_exit(WINDOW *window)
 {
-    mvwprintw(windowMain, 5, 5, "Comeback later!");
-    wgetch(windowMain);
+    mvwprintw(window, 5, 5, "Comeback later!");
+    wgetch(window);
     endwin();
     exit(0);
 }
