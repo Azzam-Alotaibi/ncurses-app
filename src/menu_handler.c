@@ -1,4 +1,6 @@
 #include "menu_handler.h"
+#include "operation_handler.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -120,10 +122,10 @@ void setup_window_operation()
     int starty = (LINES - HEIGHT_OPERATION) / 2;
     int startx = (COLS - WIDTH_OPERATION) / 2;
 
-    // the app will always override the borders by the user inputs, in order to solve that this window is created which is +2 pixels wider and higher
-    // than the main window and set its position -1 in both x and y axis to show the borders. so now the borders are in completely different window
-    // than the user inputs.
-    windowBorder = newwin(HEIGHT_OPERATION + 2, WIDTH_OPERATION + 2, starty - 1, startx - 1);
+    // the app will always override the borders by the user inputs, in order to solve that this window is created with
+    // a +2 pixels padding in horizontally and +1 pixel vertically.
+    // we did this so the borders are in completely different window to avoid the overriding of the user input.
+    windowBorder = newwin(HEIGHT_OPERATION + 2, WIDTH_OPERATION + 4, starty - 1, startx - 2);
     box(windowBorder, 0, 0);
     wrefresh(windowBorder);
     delwin(windowBorder);
@@ -137,10 +139,11 @@ void setup_window_operation()
     wrefresh(windowMain);
 }
 
-void clean_exit(WINDOW *window)
+void clean_exit()
 {
-    mvwprintw(window, 5, 5, "Comeback later!");
-    wgetch(window);
+    destroy_win();
+    mvwprintw(windowMain, 5, 5, "Comeback later!");
+    wgetch(windowMain);
     endwin();
     exit(0);
 }
@@ -150,11 +153,11 @@ _Bool main_page(int choicesLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Exit") == 0)
     {
-        clean_exit(windowMain);
+        clean_exit();
     }
     if (strcmp(currentItemName, "Choose File") == 0)
     {
-        const char *choices[] = {"Edit File", "Copy File", "Delete File", "Go Back", NULL};
+        const char *choices[] = {"Edit File", "Copy File", "Delete File", "Show File", "Go Back", NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
         choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
@@ -165,6 +168,8 @@ _Bool main_page(int choicesLength, const char *currentItemName)
     }
     else if (strcmp(currentItemName, "Create File") == 0)
     {
+        OperationFileHandler operation = file_create;
+        operation_file("create", operation);
     }
     else if (strcmp(currentItemName, "Show Log") == 0)
     {
@@ -200,10 +205,17 @@ _Bool choose_file_page(int choicesLength, const char *currentItemName)
     // TODO copy/delete file
     else if (strcmp(currentItemName, "Copy File") == 0)
     {
-        operation_file("Copy");
+        operation_file_copy();
     }
     else if (strcmp(currentItemName, "Delete File") == 0)
     {
+        OperationFileHandler operation = file_delete;
+        operation_file("delete", operation);
+    }
+    else if (strcmp(currentItemName, "Show File") == 0)
+    {
+        OperationFileHandler operation = file_show;
+        operation_file("show", operation);
     }
     return true;
 }
@@ -215,7 +227,26 @@ _Bool edit_file_page(int choicesLength, const char *currentItemName)
         return false;
     }
     // TODO append/insert/delete/show line
-
+    if (strcmp(currentItemName, "Append Line") == 0)
+    {
+        OperationLineHandler operation = line_append;
+        operation_line("append", operation);
+    }
+    if (strcmp(currentItemName, "Insert Line") == 0)
+    {
+        OperationLineHandler operation = line_insert;
+        operation_line("insert", operation);
+    }
+    if (strcmp(currentItemName, "Delete Line") == 0)
+    {
+        OperationLineHandler operation = line_delete;
+        operation_line("delete", operation);
+    }
+    if (strcmp(currentItemName, "Show Line") == 0)
+    {
+        OperationLineHandler operation = line_show;
+        operation_line("insert", operation);
+    }
     return true;
 }
 

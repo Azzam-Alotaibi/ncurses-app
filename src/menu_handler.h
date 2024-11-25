@@ -17,6 +17,8 @@ extern const int WIDTH_OPERATION;
 
 // a funciton pointer to change the layout in each page
 typedef bool (*EnterKeyHandler)(int choicesLength, const char *currentItemName);
+typedef int (*OperationFileHandler)(char pathSource[80]);
+typedef int (*OperationLineHandler)(char pathSource[80], int lineNumber);
 
 // function prototypes
 
@@ -40,6 +42,8 @@ _Bool show_log_page(int choicesLength, const char *currentItemName);
 void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, const char **choices);
 
 // operation
-void operation_file(char *operationName);
+void operation_file(char *operationName, OperationFileHandler operation);
+void operation_file_copy();
+void operation_line(char *operationName, OperationLineHandler operationFunction);
 
 #endif

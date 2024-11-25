@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <errno.h>
-#include <errors.h>
+#include "errors.h"
 #include "operation_handler.h"
 
-int fileCopy(char filePath[], char destination[])
+int file_copy(char pathSource[80], char pathDestination[80])
 {
-    FILE *in;
-    FILE *out;
-    int ch;
+    FILE *input;
+    FILE *output;
+    int charecter;
 
-    in = fopen(filePath, "r");
-    if (in == NULL)
+    input = fopen(pathSource, "r");
+    if (input == NULL)
     {
         // [10]
         if (errno == ENOENT)
@@ -20,8 +20,8 @@ int fileCopy(char filePath[], char destination[])
         else
             return ERR_UNKNOWN;
     }
-    out = fopen(destination, "w");
-    if (out == NULL)
+    output = fopen(pathDestination, "w");
+    if (output == NULL)
     {
         if (errno == ENOENT)
             return ERR_FOLDER_NOT_FOUND;
@@ -29,11 +29,32 @@ int fileCopy(char filePath[], char destination[])
             return ERR_UNKNOWN;
     }
 
-    while ((ch = fgetc(in)) != EOF)
+    while ((charecter = fgetc(input)) != EOF)
     {
-        fputc(ch, out);
+        fputc(charecter, output);
     }
-    fclose(in);
+    fclose(input);
 
+    return ERR_NONE;
+}
+
+// returns ERR_NONE if the operation is successful
+int file_create(char pathSource[80])
+{
+    // todo create file
+    return ERR_NONE;
+}
+
+// returns ERR_NONE if the operation is successful
+int file_show(char pathSource[80])
+{
+    // todo show file
+    return ERR_NONE;
+}
+
+// returns ERR_NONE if the operation is successful
+int file_delete(char pathSource[80])
+{
+    // todo delete file
     return ERR_NONE;
 }

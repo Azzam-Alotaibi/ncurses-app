@@ -1,10 +1,13 @@
 #include "menu_handler.h"
+#include "operation_handler.h"
+#include "errors.h"
 
 #include <stdbool.h>
 #include <ncurses.h>
 #include <menu.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 int main()
 {
@@ -102,24 +105,35 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
         wrefresh(windowMain);
     }
 }
-void operation_file(char *operationName)
+
+// for duplicating, deleting, creating
+void operation_file(char *operationName, OperationFileHandler operation)
 {
+    char message[85];
+    int yPosition = 0;
+    char pathSource[80];
 
     setup_window_operation();
-
     // [9]
-    char str[80];
-    // Move cursor to (0,0) and print prompt the following prompt
-    mvwprintw(windowMain, 0, 0, "Enter a string: ");
+    echo();
+
+    // formatting the message string
+    sprintf(message, "Please enter the file's path to %s file. like this format /home/etc/file.txt \npath: ", operationName);
+
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", message);
 
     // enabling echo to make the user type more than one charecter
-    echo();
     // passing the str pointer to make the function assign the user inputs to the str
-    wgetstr(windowMain, str);
-    noecho();
+    wgetstr(windowMain, pathSource);
 
-    // debugging purposes
-    mvwprintw(windowMain, 0, 0, "You entered: %s\n", str);
+    // calculate how many lines is the input and add that to the y position
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    // TODO handle the output and errors
+    operation(pathSource);
+    mvwprintw(windowMain, yPosition, 0, "You entered: %s\n", pathSource);
     wrefresh(windowMain);
     wgetch(windowMain);
 
@@ -128,5 +142,108 @@ void operation_file(char *operationName)
     // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
     // [11]
     clear();
+    noecho();
+    refresh();
+}
+
+void operation_file_copy()
+{
+    char pathSource[80];
+    char pathDestination[80];
+    int yPosition = 0;
+    int error;
+    const char *messageFirst = "Please enter the file's path to copy it like this /home/etc/file.txt \npath: ";
+    const char *messageSecond = "Please enter the destination path and the file name like this /home/etc/newFile.txt \npath: ";
+
+    setup_window_operation();
+    // enabling echo to make the user type more than one charecter
+    // [9]
+    echo();
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", messageFirst);
+    // passing the str pointer to make the function assign the user inputs to the str
+    wgetstr(windowMain, pathSource);
+
+    // calculate how many lines is the input and add that to the y position
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
+    wgetstr(windowMain, pathDestination);
+
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    // TODO handle the output and errors
+    error = file_copy(pathSource, pathDestination);
+    if (error == ERR_FILE_NOT_FOUND)
+    {
+        mvwprintw(windowMain, yPosition, 0, "File not found.");
+    }
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
+    destroy_win();
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    noecho();
+    refresh();
+}
+
+void operation_line(char *operationName, OperationLineHandler operationFunction)
+{
+    char messageFirst[85];
+    char pathSource[80];
+    char lineNumberchar[11];
+    char *endptr;
+    int lineNumber;
+    int error;
+    char messageSecond[] = "Please enter the line number: ";
+    int yPosition = 0;
+
+    setup_window_operation();
+    // [9]
+    echo();
+
+    // formatting the message string
+    sprintf(messageFirst, "Please enter the file's path to %s, like this /home/etc/file.txt \npath: ", operationName);
+
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", messageFirst);
+    // passing the str pointer to make the function assign the user inputs to the str
+    wgetstr(windowMain, pathSource);
+
+    // calculate how many lines is the input and add that to the y position
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
+    wgetstr(windowMain, lineNumberchar);
+    // [13]
+    lineNumber = strtol(lineNumberchar, &endptr, 10);
+    if (*endptr == '\0')
+    {
+        // TODO handle the error
+    }
+
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 2;
+
+    // TODO handle the output and errors
+
+    error = operationFunction(pathSource, lineNumber);
+    if (error == ERR_FILE_NOT_FOUND)
+    {
+        mvwprintw(windowMain, yPosition, 0, "File not found.");
+    }
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
+    destroy_win();
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    noecho();
     refresh();
 }
