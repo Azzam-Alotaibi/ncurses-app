@@ -111,7 +111,7 @@ void operation_file(char *operationName, OperationFileHandler operation)
 {
     char message[85];
     int yPosition = 0;
-    char pathSource[80];
+    char pathSource[150];
 
     setup_window_operation();
     // [9]
@@ -148,8 +148,8 @@ void operation_file(char *operationName, OperationFileHandler operation)
 
 void operation_file_copy()
 {
-    char pathSource[80];
-    char pathDestination[80];
+    char pathSource[150];
+    char pathDestination[150];
     int yPosition = 0;
     int error;
     const char *messageFirst = "Please enter the file's path to copy it like this /home/etc/file.txt \npath: ";
@@ -194,7 +194,7 @@ void operation_file_copy()
 void operation_line(char *operationName, OperationLineHandler operationFunction)
 {
     char messageFirst[85];
-    char pathSource[80];
+    char pathSource[150];
     char lineNumberchar[11];
     char *endptr;
     int lineNumber;
