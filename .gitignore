@@ -65,5 +65,5 @@ test2.c
 test3.c
 dockerfile
 
-# personal
-git.txt
+# text files
+*.txt
