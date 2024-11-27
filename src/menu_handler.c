@@ -7,10 +7,10 @@
 // global variable
 WINDOW *windowMain;
 WINDOW *windowBorder;
-const int HEIGHT_MENU = 20;
-const int WIDTH_MENU = 50;
-const int HEIGHT_OPERATION = 20;
-const int WIDTH_OPERATION = 70;
+int HEIGHT_MENU;
+int WIDTH_MENU;
+int HEIGHT_OPERATION;
+int WIDTH_OPERATION;
 
 // initializing the curses mode with basic settings.
 void init_ncruses()
@@ -41,12 +41,12 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
     free(items);
 }
 
-void destroy_win()
+void destroy_window(WINDOW *window)
 {
     // [7]
-    wborder(windowMain, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
-    wrefresh(windowMain);
-    delwin(windowMain);
+    wborder(window, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+    wrefresh(window);
+    delwin(window);
 }
 
 // *APP DECISIONS 6* in the word file
@@ -92,8 +92,10 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
 void setup_window_menu(MENU **menu, int choicesLength)
 {
 
-    // center the window
     // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
+    HEIGHT_MENU = LINES * 0.5 + 2;
+    WIDTH_MENU = COLS * 0.5;
+    // center the window
     int starty = (LINES - HEIGHT_MENU) / 2;
     int startx = (COLS - WIDTH_MENU) / 2;
 
@@ -114,34 +116,41 @@ void setup_window_menu(MENU **menu, int choicesLength)
     wrefresh(windowMain);
 }
 
-void setup_window_operation()
+void setup_window_operation(int height)
 {
-
+    HEIGHT_OPERATION = LINES * 0.5;
+    WIDTH_OPERATION = COLS * 0.8;
     // center the window
     // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
-    int starty = (LINES - HEIGHT_OPERATION) / 2;
-    int startx = (COLS - WIDTH_OPERATION) / 2;
+    const int starty = (LINES) * 0.1;
+    const int startx = (COLS - WIDTH_OPERATION) / 2;
+
+    if (height == 0)
+        height = HEIGHT_OPERATION;
 
     // the app will always override the borders by the user inputs, in order to solve that this window is created with
     // a +2 pixels padding in horizontally and +1 pixel vertically.
     // we did this so the borders are in completely different window to avoid the overriding of the user input.
-    windowBorder = newwin(HEIGHT_OPERATION + 2, WIDTH_OPERATION + 4, starty - 1, startx - 2);
+    windowBorder = newwin(height + 2, WIDTH_OPERATION + 4, starty - 1, startx - 2);
     box(windowBorder, 0, 0);
     wrefresh(windowBorder);
-    delwin(windowBorder);
 
     // create a new window with the assigned attributes
-    windowMain = newwin(HEIGHT_OPERATION, WIDTH_OPERATION, starty, startx);
+    windowMain = newwin(height, WIDTH_OPERATION, starty, startx);
     // create a box around the window as a border
     // box(windowMain, 0, 0);
     keypad(windowMain, TRUE);
+
+    // enable scroling to show the big files
+    scrollok(windowMain, TRUE);
+    scrollok(windowBorder, TRUE);
 
     wrefresh(windowMain);
 }
 
 void clean_exit()
 {
-    destroy_win();
+    destroy_window(windowMain);
     mvwprintw(windowMain, 5, 5, "Comeback later!");
     wgetch(windowMain);
     endwin();

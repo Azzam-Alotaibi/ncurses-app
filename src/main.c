@@ -87,7 +87,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             break;
         case 10: // 10 is the enter key for wgetch() / getch()
             cleanup_menu(menu, items, choicesLength);
-            destroy_win();
+            destroy_window(windowMain);
 
             isRunning = enterKeyHandler(choicesLength, currentItemName);
 
@@ -110,10 +110,10 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
 void operation_file(char *operationName, OperationFileHandler operation)
 {
     char message[100];
-    int yPosition = 0;
+    int yPosition = 0, error;
     char pathSource[150];
 
-    setup_window_operation();
+    setup_window_operation(0);
     // [9]
     echo();
 
@@ -133,12 +133,18 @@ void operation_file(char *operationName, OperationFileHandler operation)
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     // TODO handle the output and errors
-    operation(pathSource);
+
+    error = operation(pathSource);
+    if (error == ERR_FILE_NOT_FOUND)
+    {
+        mvwprintw(windowMain, yPosition, 0, "File not found.");
+    }
     // mvwprintw(windowMain, yPosition, 0, "You entered: %s\n", pathSource);
     wrefresh(windowMain);
     wgetch(windowMain);
+    getch();
 
-    destroy_win();
+    destroy_window(windowMain);
 
     // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
     // [11]
@@ -156,7 +162,7 @@ void operation_file_copy()
     const char *messageFirst = "Please enter the file's path to copy it like this /home/etc/file.txt \npath: ";
     const char *messageSecond = "Please enter the destination path and the file name like this /home/etc/newFile.txt \npath: ";
 
-    setup_window_operation();
+    setup_window_operation(0);
     // enabling echo to make the user type more than one charecter
     // [9]
     echo();
@@ -183,7 +189,7 @@ void operation_file_copy()
     wrefresh(windowMain);
     wgetch(windowMain);
 
-    destroy_win();
+    destroy_window(windowMain);
 
     // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
     // [11]
@@ -203,7 +209,7 @@ void operation_line(char *operationName, OperationLineHandler operationFunction)
     char messageSecond[] = "Please enter the line number: ";
     int yPosition = 0;
 
-    setup_window_operation();
+    setup_window_operation(0);
     // [9]
     echo();
 
@@ -240,7 +246,7 @@ void operation_line(char *operationName, OperationLineHandler operationFunction)
     wrefresh(windowMain);
     wgetch(windowMain);
 
-    destroy_win();
+    destroy_window(windowMain);
 
     // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
     // [11]
