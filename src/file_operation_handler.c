@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
+
 #include "errors.h"
 #include "operation_handler.h"
 #include "menu_handler.h"
@@ -61,8 +63,9 @@ int file_create(char pathSource[150])
 // returns ERR_NONE if the operation is successful
 int file_show(char pathSource[150])
 {
-    int lineCount, error, cursorYPosition = 0, ch;
-    char line[WIDTH_OPERATION - 1];
+    int lineCount = 0, error, cursorYPosition = 0, ch, lastOperation, index;
+    // the width of the window
+    char line[WIDTH_OPERATION + 1];
     FILE *file;
 
     file = fopen(pathSource, "r");
@@ -72,55 +75,81 @@ int file_show(char pathSource[150])
         return error;
 
     // destroy_window();
-    lineCount = 0;
+
     while (fgets(line, sizeof(line), file))
     {
         lineCount++;
     }
+
     // to reset the pointer to the start of the file
     fseek(file, 0, SEEK_SET);
 
     werase(windowMain);
     wrefresh(windowMain);
-    if (lineCount > HEIGHT_MENU)
+    if (lineCount <= HEIGHT_OPERATION)
     {
-
-        // scrollok(windowMain, true);
-        // scrollok(windowBorder, true);
-        destroy_window(windowBorder);
-
-        setup_window_operation(lineCount);
-    }
-    while (fgets(line, sizeof(line), file))
-    {
-        mvwprintw(windowMain, cursorYPosition++, 0, "%s", line);
+        while (fgets(line, sizeof(line), file))
+        {
+            wprintw(windowMain, "%s", line);
+        }
+        wgetch(windowMain);
+        fclose(file);
+        return ERR_NONE;
     }
 
-    // Press 'q' to quit
-    while ((ch = wgetch(windowMain)) != 'q')
+    char fileContent[lineCount][WIDTH_OPERATION + 1];
+    for (int i = 0; i < lineCount; i++)
     {
-        //! when u scroll down then go up, the old content gets deleted
+        fgets(line, sizeof(line), file);
+        strcpy(fileContent[i], line);
+    }
+    fclose(file);
+
+    while (cursorYPosition < HEIGHT_OPERATION - 1)
+    {
+        mvwprintw(windowMain, cursorYPosition, 0, "%s", fileContent[cursorYPosition]);
+        cursorYPosition++;
+    }
+    lastOperation = KEY_DOWN;
+    index = cursorYPosition;
+    while (true)
+    {
+        ch = wgetch(windowMain);
+        //! super buggy
         switch (ch)
         {
         case KEY_UP:
+            if (lastOperation == KEY_DOWN)
+                index -= HEIGHT_OPERATION - 1;
+            lastOperation = KEY_UP;
+            if (index == 0)
+                break;
+            cursorYPosition--;
+            index--;
             // scroll up
             wscrl(windowMain, -1);
+            mvwprintw(windowMain, cursorYPosition, 0, "%s", fileContent[index]);
+
             break;
         case KEY_DOWN:
+            if (lastOperation == KEY_UP)
+                index += HEIGHT_OPERATION;
+            lastOperation = KEY_DOWN;
+            if (index == lineCount - 1)
+                break;
+            cursorYPosition++;
+            index++;
             // scroll down
             wscrl(windowMain, 1);
+            mvwprintw(windowMain, cursorYPosition, 0, "%s", fileContent[index]);
+
             break;
+        case 'q':
+            return ERR_NONE;
         }
         wrefresh(windowMain);
     }
-
-    // wgetch(windowMain);
-    // box(windowBorder, 0, 0);
-
-    fclose(file);
-    return ERR_NONE;
 }
-
 // returns ERR_NONE if the operation is successful
 int file_delete(char pathSource[150])
 {

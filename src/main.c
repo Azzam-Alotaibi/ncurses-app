@@ -140,9 +140,6 @@ void operation_file(char *operationName, OperationFileHandler operation)
         mvwprintw(windowMain, yPosition, 0, "File not found.");
     }
     // mvwprintw(windowMain, yPosition, 0, "You entered: %s\n", pathSource);
-    wrefresh(windowMain);
-    wgetch(windowMain);
-    getch();
 
     destroy_window(windowMain);
 
