@@ -8,6 +8,7 @@
 
 int does_file_exist(FILE *file)
 {
+    // [14]
     if (file == NULL)
     {
         // [10]
@@ -98,7 +99,7 @@ int file_show(char pathSource[150])
     // deletes
     werase(windowMain);
     wrefresh(windowMain);
-    if (lineCount <= HEIGHT)
+    if (lineCount < HEIGHT)
     {
         while (fgets(line, sizeof(line), file))
         {

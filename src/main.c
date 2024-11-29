@@ -191,7 +191,7 @@ void operation_file_copy()
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, pathDestination);
 
-    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+    yPosition += ceil((strlen(pathDestination) + 6) / WIDTH_OPERATION) + 3;
 
     // TODO handle the errors
     error = file_copy(pathSource, pathDestination);
@@ -210,23 +210,118 @@ void operation_file_copy()
     refresh();
 }
 
-void operation_line(char *operationName, OperationLineHandler operationFunction)
+void operation_line_append()
 {
-    char messageFirst[85];
     char pathSource[150];
-    char lineNumberchar[11];
-    char *endptr;
-    int lineNumber;
-    int error;
-    char messageSecond[] = "Please enter the line number: ";
+    char newLine[513];
     int yPosition = 0;
+    int error;
+    const char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    const char *messageSecond = "Please enter the new line you'd like to add to the file (max 512 characters) \nNew Line: ";
+
+    setup_window_operation();
+    // enabling echo to make the user type more than one charecter
+    // [9]
+    echo();
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", messageFirst);
+    // passing the str pointer to make the function assign the user inputs to the str
+    wgetstr(windowMain, pathSource);
+
+    // calculate how many lines is the input and add that to the y position
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
+    wgetstr(windowMain, newLine);
+
+    yPosition += ceil((strlen(newLine) + 10) / WIDTH_OPERATION) + 3;
+
+    // TODO handle the errors
+    error = line_append(pathSource, newLine);
+    if (error == ERR_FILE_NOT_FOUND)
+    {
+        mvwprintw(windowMain, yPosition, 0, "File not found.");
+        wgetch(windowMain);
+    }
+
+    destroy_window(windowMain);
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    noecho();
+    refresh();
+}
+
+void operation_line_insert()
+{
+    char pathSource[150], newLine[513], lineNumberString[10];
+    char *endptr;
+    int yPosition = 0, error, lineNumber;
+    const char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    const char *messageSecond = "Please enter the new line you'd like to add to the file (max 512 characters) \nNew Line: ";
+    const char *messageThird = "Please enter the line number you'd like to insert the line just under \nLine Number: ";
+
+    setup_window_operation();
+    // enabling echo to make the user type more than one charecter
+    // [9]
+    echo();
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", messageFirst);
+    // passing the str pointer to make the function assign the user inputs to the str
+    wgetstr(windowMain, pathSource);
+
+    // calculate how many lines is the input and add that to the y position
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
+    wgetstr(windowMain, newLine);
+
+    yPosition += ceil((strlen(newLine) + 10) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageThird);
+    wgetstr(windowMain, lineNumberString);
+
+    yPosition += ceil((strlen(lineNumberString) + 14) / WIDTH_OPERATION) + 3;
+
+    lineNumber = strtol(lineNumberString, &endptr, 10);
+    if (*endptr == '\0')
+    {
+        // TODO handle the error
+    }
+
+    // TODO handle the errors
+    error = line_insert(pathSource, lineNumber, newLine);
+    if (error == ERR_FILE_NOT_FOUND)
+    {
+        mvwprintw(windowMain, yPosition, 0, "File not found.");
+        wgetch(windowMain);
+    }
+
+    destroy_window(windowMain);
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    noecho();
+    refresh();
+}
+
+void operation_line(OperationLineHandler operationFunction)
+{
+    char messageFirst[85], pathSource[150], lineNumberString[10];
+    char *endptr;
+    int lineNumber, error, yPosition = 0;
+    char messageSecond[] = "Please enter the line number: ";
 
     setup_window_operation();
     // [9]
     echo();
 
     // formatting the message string
-    sprintf(messageFirst, "Please enter the file's path to %s, like this /home/etc/file.txt \npath: ", operationName);
+    sprintf(messageFirst, "Please enter the file's path like this /home/etc/file.txt \npath: ");
 
     // we used a string literal to avoid Wformat-security [12]
     // print prompt the following prompt at the piont (0, 0)
@@ -238,9 +333,9 @@ void operation_line(char *operationName, OperationLineHandler operationFunction)
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
-    wgetstr(windowMain, lineNumberchar);
+    wgetstr(windowMain, lineNumberString);
     // [13]
-    lineNumber = strtol(lineNumberchar, &endptr, 10);
+    lineNumber = strtol(lineNumberString, &endptr, 10);
     if (*endptr == '\0')
     {
         // TODO handle the error

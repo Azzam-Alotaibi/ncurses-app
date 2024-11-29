@@ -238,23 +238,21 @@ _Bool edit_file_page(int choicesLength, const char *currentItemName)
     // TODO append/insert/delete/show line
     if (strcmp(currentItemName, "Append Line") == 0)
     {
-        OperationLineHandler operation = line_append;
-        operation_line("append", operation);
+        operation_line_append();
     }
     if (strcmp(currentItemName, "Insert Line") == 0)
     {
-        OperationLineHandler operation = line_insert;
-        operation_line("insert", operation);
+        operation_line_insert();
     }
     if (strcmp(currentItemName, "Delete Line") == 0)
     {
         OperationLineHandler operation = line_delete;
-        operation_line("delete", operation);
+        operation_line(operation);
     }
     if (strcmp(currentItemName, "Show Line") == 0)
     {
         OperationLineHandler operation = line_show;
-        operation_line("insert", operation);
+        operation_line(operation);
     }
     return true;
 }
