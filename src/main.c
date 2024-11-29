@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-// int main()
+// int main() // todo remove comments
 // {
 //     init_ncruses();
 //     setup_window_operation();
@@ -229,11 +229,31 @@ void operation_line_append()
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
+    //  is ctrl+c to exit
+    if (strcmp(pathSource, "") == 0 || strcmp(pathSource, "exit") == 0)
+    {
+        destroy_window(windowMain);
+        clear();
+        noecho();
+        refresh();
+        return;
+    }
+
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, newLine);
+
+    //  is ctrl+c to exit
+    if (strcmp(newLine, "") == 0 || strcmp(newLine, "exit") == 0)
+    {
+        destroy_window(windowMain);
+        clear();
+        noecho();
+        refresh();
+        return;
+    }
 
     yPosition += ceil((strlen(newLine) + 10) / WIDTH_OPERATION) + 3;
 
@@ -273,11 +293,31 @@ void operation_line_insert()
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
+    //  is ctrl+c to exit
+    if (strcmp(pathSource, "") == 0 || strcmp(pathSource, "exit") == 0)
+    {
+        destroy_window(windowMain);
+        clear();
+        noecho();
+        refresh();
+        return;
+    }
+
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, newLine);
+
+    //  is ctrl+c to exit
+    if (strcmp(newLine, "") == 0 || strcmp(newLine, "exit") == 0)
+    {
+        destroy_window(windowMain);
+        clear();
+        noecho();
+        refresh();
+        return;
+    }
 
     yPosition += ceil((strlen(newLine) + 10) / WIDTH_OPERATION) + 3;
 
@@ -329,11 +369,32 @@ void operation_line(OperationLineHandler operationFunction)
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
+    //  is ctrl+c to exit
+    if (strcmp(pathSource, "") == 0 || strcmp(pathSource, "exit") == 0)
+    {
+        destroy_window(windowMain);
+        clear();
+        noecho();
+        refresh();
+        return;
+    }
+
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, lineNumberString);
+
+    //  is the ctrl+c character. then the app will exit
+    if (strcmp(lineNumberString, "") == 0 || strcmp(lineNumberString, "exit") == 0)
+    {
+        destroy_window(windowMain);
+        clear();
+        noecho();
+        refresh();
+        return;
+    }
+
     // [13]
     lineNumber = strtol(lineNumberString, &endptr, 10);
     if (*endptr == '\0')

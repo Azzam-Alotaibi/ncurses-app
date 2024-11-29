@@ -8,7 +8,7 @@ int file_copy(char pathSource[150], char pathDestination[150]);
 int file_create(char pathSource[150]);
 int file_show(char pathSource[150]);
 int file_delete(char pathSource[150]);
-int does_file_exist(FILE *file, char[1] mode);
+int does_file_exist(FILE *file, char mode[1]);
 
 // line manupilation functions
 

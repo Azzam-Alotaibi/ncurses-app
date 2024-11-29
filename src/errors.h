@@ -13,6 +13,7 @@
 #define ERR_FILE_NOT_FOUND 1
 #define ERR_FOLDER_NOT_FOUND 2
 #define ERR_PERMISSION_DENIED 3
+#define ERR_OUT_OF_BOUNDS 4
 #define ERR_UNKNOWN 99
 
 #endif

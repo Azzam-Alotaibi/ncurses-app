@@ -6,7 +6,7 @@
 #include "operation_handler.h"
 #include "menu_handler.h"
 
-int does_file_exist(FILE *file, char[1] mode)
+int does_file_exist(FILE *file, char mode[1])
 {
     // [14]
     if (file == NULL)

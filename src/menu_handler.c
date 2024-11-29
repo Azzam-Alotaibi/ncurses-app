@@ -182,7 +182,7 @@ _Bool main_page(int choicesLength, const char *currentItemName)
     }
     else if (strcmp(currentItemName, "Show Log") == 0)
     {
-        const char *choices[] = {"In The Terminal", "As A Text File", "Go Back", NULL};
+        const char *choices[] = {"In Terminal", "Print File", "Go Back", NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
         choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
@@ -265,10 +265,10 @@ _Bool show_log_page(int choicesLength, const char *currentItemName)
     }
 
     // TODO in the terminal/as a text file
-    else if (strcmp(currentItemName, "In The Terminal") == 0)
+    else if (strcmp(currentItemName, "In Terminal") == 0)
     {
     }
-    else if (strcmp(currentItemName, "As A Text File") == 0)
+    else if (strcmp(currentItemName, "Print File") == 0)
     {
     }
 
