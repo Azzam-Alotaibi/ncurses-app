@@ -147,12 +147,13 @@ void operation_file(char *operationName, OperationFileHandler operation)
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
-    // TODO handle the output and errors
+    // TODO handle the errors
 
     error = operation(pathSource);
     if (error == ERR_FILE_NOT_FOUND)
     {
         mvwprintw(windowMain, yPosition, 0, "File not found.");
+        wgetch(windowMain);
     }
     // mvwprintw(windowMain, yPosition, 0, "You entered: %s\n", pathSource);
 
@@ -192,14 +193,13 @@ void operation_file_copy()
 
     yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
-    // TODO handle the output and errors
+    // TODO handle the errors
     error = file_copy(pathSource, pathDestination);
     if (error == ERR_FILE_NOT_FOUND)
     {
         mvwprintw(windowMain, yPosition, 0, "File not found.");
+        wgetch(windowMain);
     }
-    wrefresh(windowMain);
-    wgetch(windowMain);
 
     destroy_window(windowMain);
 
@@ -248,15 +248,14 @@ void operation_line(char *operationName, OperationLineHandler operationFunction)
 
     yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 2;
 
-    // TODO handle the output and errors
+    // TODO handle the errors
 
     error = operationFunction(pathSource, lineNumber);
     if (error == ERR_FILE_NOT_FOUND)
     {
         mvwprintw(windowMain, yPosition, 0, "File not found.");
+        wgetch(windowMain);
     }
-    wrefresh(windowMain);
-    wgetch(windowMain);
 
     destroy_window(windowMain);
 

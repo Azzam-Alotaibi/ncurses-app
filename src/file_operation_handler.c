@@ -44,6 +44,11 @@ int file_copy(char pathSource[150], char pathDestination[150])
     }
     fclose(input);
 
+    werase(windowMain);
+    wprintw(windowMain, "File Copied Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
     return ERR_NONE;
 }
 
@@ -56,6 +61,11 @@ int file_create(char pathSource[150])
     if (error != ERR_NONE)
         return error;
     fclose(file);
+
+    werase(windowMain);
+    wprintw(windowMain, "File Created Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
 
     return ERR_NONE;
 }
@@ -155,12 +165,18 @@ int file_show(char pathSource[150])
         case 'q':
             return ERR_NONE;
         }
-        wrefresh(windowMain);
     }
 }
 // returns ERR_NONE if the operation is successful
 int file_delete(char pathSource[150])
 {
-    // todo delete file
-    return ERR_NONE;
+    if (remove(pathSource) == 0)
+        return ERR_NONE;
+
+    werase(windowMain);
+    wprintw(windowMain, "File Deleted Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
+    return ERR_FILE_NOT_FOUND;
 }
