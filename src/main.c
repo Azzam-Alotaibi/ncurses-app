@@ -9,10 +9,18 @@
 #include <stdlib.h>
 #include <math.h>
 
+// int main()
+// {
+//     init_ncruses();
+//     setup_window_operation();
+//     file_show("/home/azzam/Computer-architecture/test.txt");
+// }
+
 int main()
 {
 
     int choicesLength;
+    const int MINIMUM_WIDTH = 26;
 
     // NULL is needed for new_menu() to work. and it's considered best practice
     const char *choices[] = {"Choose File", "Create File", "Show Log", "Exit", NULL};
@@ -21,6 +29,13 @@ int main()
     choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
 
     init_ncruses();
+
+    if (LINES < MINIMUM_WIDTH)
+    {
+        endwin();
+        printf("Your window is too narrow, sorry you can't open the app.\n");
+        exit(0);
+    }
 
     // setting the function pointer to the main page functionality
     EnterKeyHandler main_pg = main_page;
@@ -113,7 +128,7 @@ void operation_file(char *operationName, OperationFileHandler operation)
     int yPosition = 0, error;
     char pathSource[150];
 
-    setup_window_operation(0);
+    setup_window_operation();
     // [9]
     echo();
 
@@ -159,7 +174,7 @@ void operation_file_copy()
     const char *messageFirst = "Please enter the file's path to copy it like this /home/etc/file.txt \npath: ";
     const char *messageSecond = "Please enter the destination path and the file name like this /home/etc/newFile.txt \npath: ";
 
-    setup_window_operation(0);
+    setup_window_operation();
     // enabling echo to make the user type more than one charecter
     // [9]
     echo();
@@ -206,7 +221,7 @@ void operation_line(char *operationName, OperationLineHandler operationFunction)
     char messageSecond[] = "Please enter the line number: ";
     int yPosition = 0;
 
-    setup_window_operation(0);
+    setup_window_operation();
     // [9]
     echo();
 

@@ -10,9 +10,8 @@
 // we decided to let windowMain a global variable since it's literally used across the app and passing it on ever function call doesn't make sense anymore.
 extern WINDOW *windowMain;
 extern WINDOW *windowBorder;
-extern int HEIGHT_MENU;
+extern int HEIGHT;
 extern int WIDTH_MENU;
-extern int HEIGHT_OPERATION;
 extern int WIDTH_OPERATION;
 
 // a funciton pointer to change the layout in each page
@@ -28,7 +27,7 @@ void clean_exit();
 void cleanup_menu(MENU *menu, ITEM **items, int itemsLength);
 void destroy_window(WINDOW *window);
 void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices);
-void setup_window_operation(int width);
+void setup_window_operation();
 void setup_window_menu(MENU **menu, int choicesLength);
 void edit_page();
 

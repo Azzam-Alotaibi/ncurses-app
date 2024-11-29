@@ -7,9 +7,8 @@
 // global variable
 WINDOW *windowMain;
 WINDOW *windowBorder;
-int HEIGHT_MENU;
+int HEIGHT;
 int WIDTH_MENU;
-int HEIGHT_OPERATION;
 int WIDTH_OPERATION;
 
 // initializing the curses mode with basic settings.
@@ -22,6 +21,11 @@ void init_ncruses()
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
+
+    // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
+    // 13 48
+    HEIGHT = LINES * .5;
+    WIDTH_MENU = COLS * .5;
 }
 
 // clean the menu to prevent the memory leak
@@ -92,15 +96,13 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
 void setup_window_menu(MENU **menu, int choicesLength)
 {
 
-    // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
-    HEIGHT_MENU = LINES * 0.5 + 2;
-    WIDTH_MENU = COLS * 0.5;
     // center the window
-    int starty = (LINES - HEIGHT_MENU) / 2;
+
+    int starty = (LINES - HEIGHT) / 2;
     int startx = (COLS - WIDTH_MENU) / 2;
 
     // create a new window with the assigned attributes
-    windowMain = newwin(HEIGHT_MENU, WIDTH_MENU, starty, startx);
+    windowMain = newwin(HEIGHT, WIDTH_MENU, starty, startx);
     // create a box around the window as a border
     box(windowMain, 0, 0);
     keypad(windowMain, TRUE);
@@ -109,34 +111,32 @@ void setup_window_menu(MENU **menu, int choicesLength)
     set_menu_win(*menu, windowMain);
 
     // create a sub-window for items and aling it within the box using derwin() [3]
-    set_menu_sub(*menu, derwin(windowMain, choicesLength, HEIGHT_MENU - 1, 1, 2));
+    set_menu_sub(*menu, derwin(windowMain, choicesLength, HEIGHT - 1, 1, 2));
 
     // to show the menu to the screen
     post_menu(*menu);
     wrefresh(windowMain);
 }
 
-void setup_window_operation(int height)
+void setup_window_operation()
 {
-    HEIGHT_OPERATION = LINES * 0.5;
     WIDTH_OPERATION = COLS * 0.8;
     // center the window
     // LINES and COLS are global variables provided by the library for the height and width of the stdscr (default screen)
-    const int starty = (LINES) * 0.1;
+    const int starty = (LINES - HEIGHT) / 2;
     const int startx = (COLS - WIDTH_OPERATION) / 2;
-
-    if (height == 0)
-        height = HEIGHT_OPERATION;
 
     // the app will always override the borders by the user inputs, in order to solve that this window is created with
     // a +2 pixels padding in horizontally and +1 pixel vertically.
     // we did this so the borders are in completely different window to avoid the overriding of the user input.
-    windowBorder = newwin(height + 2, WIDTH_OPERATION + 4, starty - 1, startx - 2);
+    // windowBorder = newwin(HEIGHT, WIDTH_OPERATION, starty, startx);
+
+    windowBorder = newwin(HEIGHT + 2, WIDTH_OPERATION + 4, starty - 1, startx - 2);
     box(windowBorder, 0, 0);
     wrefresh(windowBorder);
 
     // create a new window with the assigned attributes
-    windowMain = newwin(height, WIDTH_OPERATION, starty, startx);
+    windowMain = newwin(HEIGHT, WIDTH_OPERATION, starty, startx);
     // create a box around the window as a border
     // box(windowMain, 0, 0);
     keypad(windowMain, TRUE);
@@ -150,9 +150,9 @@ void setup_window_operation(int height)
 
 void clean_exit()
 {
-    destroy_window(windowMain);
     mvwprintw(windowMain, 5, 5, "Comeback later!");
     wgetch(windowMain);
+    destroy_window(windowMain);
     endwin();
     exit(0);
 }

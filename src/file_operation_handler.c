@@ -63,7 +63,8 @@ int file_create(char pathSource[150])
 // returns ERR_NONE if the operation is successful
 int file_show(char pathSource[150])
 {
-    int lineCount = 0, error, cursorYPosition = 0, ch, lastOperation, index;
+
+    int lineCount = 0, error, ch, lastOperation, index;
     // the width of the window
     char line[WIDTH_OPERATION + 1];
     FILE *file;
@@ -84,9 +85,10 @@ int file_show(char pathSource[150])
     // to reset the pointer to the start of the file
     fseek(file, 0, SEEK_SET);
 
+    // deletes
     werase(windowMain);
     wrefresh(windowMain);
-    if (lineCount <= HEIGHT_OPERATION)
+    if (lineCount <= HEIGHT)
     {
         while (fgets(line, sizeof(line), file))
         {
@@ -101,47 +103,53 @@ int file_show(char pathSource[150])
     for (int i = 0; i < lineCount; i++)
     {
         fgets(line, sizeof(line), file);
+
+        // this line replaces the the first "\n" occurence with null "\0".
+        // the way fgets work, is to stop if it encounters a new line "\n" or the sizeof(line) is all used up.
+        // hence, the new line "\n" was sabotaging the custom scroll implementation so I had to delete it
+        // [13]
+        strtok(line, "\n");
         strcpy(fileContent[i], line);
     }
     fclose(file);
-
-    while (cursorYPosition < HEIGHT_OPERATION - 1)
+    for (int i = 0; i < HEIGHT; i++)
     {
-        mvwprintw(windowMain, cursorYPosition, 0, "%s", fileContent[cursorYPosition]);
-        cursorYPosition++;
+        mvwprintw(windowMain, i, 0, "%s", fileContent[i]);
     }
+    // mvwprintw(windowMain, HEIGHT - 1, 0, "%s", fileContent[HEIGHT - 1]);
+
     lastOperation = KEY_DOWN;
-    index = cursorYPosition;
+    index = HEIGHT - 1;
+    // custom scrolling in the terminal
     while (true)
     {
         ch = wgetch(windowMain);
-        //! super buggy
+
         switch (ch)
         {
         case KEY_UP:
             if (lastOperation == KEY_DOWN)
-                index -= HEIGHT_OPERATION - 1;
+                index -= HEIGHT - 1;
+
             lastOperation = KEY_UP;
             if (index == 0)
                 break;
-            cursorYPosition--;
             index--;
             // scroll up
             wscrl(windowMain, -1);
-            mvwprintw(windowMain, cursorYPosition, 0, "%s", fileContent[index]);
+            mvwprintw(windowMain, 0, 0, "%s", fileContent[index]);
 
             break;
         case KEY_DOWN:
             if (lastOperation == KEY_UP)
-                index += HEIGHT_OPERATION;
+                index += HEIGHT - 1;
             lastOperation = KEY_DOWN;
             if (index == lineCount - 1)
                 break;
-            cursorYPosition++;
             index++;
             // scroll down
             wscrl(windowMain, 1);
-            mvwprintw(windowMain, cursorYPosition, 0, "%s", fileContent[index]);
+            mvwprintw(windowMain, HEIGHT - 1, 0, "%s", fileContent[index]);
 
             break;
         case 'q':
