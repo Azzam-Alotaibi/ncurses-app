@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "errors.h"
-#include "menu_handler.h"
+#include "window_handler.h"
 #include "operation_handler.h"
 
 // returns ERR_NONE if the operation is successful
@@ -21,7 +21,12 @@ int line_append(char pathSource[150], const char *newLine)
     // appending the new line to the file
     fprintf(file, "%s\n", newLine);
     fclose(file);
-    // todo append line
+
+    werase(windowMain);
+    wprintw(windowMain, "Line Appended Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
     return ERR_NONE;
 }
 
@@ -38,6 +43,7 @@ int line_insert(char pathSource[150], int lineNumber, const char *newLine)
     error = does_file_exist(fileMain, "r");
     if (error != ERR_NONE)
     {
+        fclose(fileMain);
         return error;
     }
     fileTemp = fopen(tempFileName, "w");
@@ -48,7 +54,7 @@ int line_insert(char pathSource[150], int lineNumber, const char *newLine)
         {
             // since the last line don't have \n, to stay consistent, we have to remove it and always add it.
             strtok(line, "\n");
-            fprintf(fileTemp, "%s\n%s\n", line, newLine);
+            fprintf(fileTemp, "%s\n%s\n", newLine, line);
         }
         else
         {
@@ -64,8 +70,13 @@ int line_insert(char pathSource[150], int lineNumber, const char *newLine)
     remove(pathSource);
     rename(tempFileName, pathSource);
 
-    if (currentLine < lineNumber)
+    if (currentLine <= lineNumber)
         return ERR_OUT_OF_BOUNDS;
+
+    werase(windowMain);
+    wprintw(windowMain, "Line Inserted Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
 
     return ERR_NONE;
 }
@@ -82,6 +93,7 @@ int line_delete(char pathSource[80], int lineNumber)
     error = does_file_exist(fileMain, "r");
     if (error != ERR_NONE)
     {
+        fclose(fileMain);
         return error;
     }
 
@@ -103,8 +115,13 @@ int line_delete(char pathSource[80], int lineNumber)
     remove(pathSource);
     rename(tempFileName, pathSource);
 
-    if (currentLine < lineNumber)
+    if (currentLine <= lineNumber)
         return ERR_OUT_OF_BOUNDS;
+
+    werase(windowMain);
+    wprintw(windowMain, "Line Deleted Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
 
     return ERR_NONE;
 }
@@ -121,6 +138,7 @@ int line_show(char pathSource[80], int lineNumber)
     error = does_file_exist(fileMain, "r");
     if (error != ERR_NONE)
     {
+        fclose(fileMain);
         return error;
     }
 

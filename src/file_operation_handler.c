@@ -4,10 +4,11 @@
 
 #include "errors.h"
 #include "operation_handler.h"
-#include "menu_handler.h"
+#include "window_handler.h"
 
 int does_file_exist(FILE *file, char mode[1])
 {
+
     // [14]
     if (file == NULL)
     {
@@ -36,18 +37,26 @@ int file_copy(char pathSource[150], char pathDestination[150])
     input = fopen(pathSource, "r");
     error = does_file_exist(input, "r");
     if (error != ERR_NONE)
+    {
+        fclose(input);
         return error;
+    }
 
     output = fopen(pathDestination, "w");
     error = does_file_exist(output, "w");
     if (error != ERR_NONE)
+    {
+        fclose(input);
+        fclose(output);
         return error;
+    }
 
     while ((charecter = fgetc(input)) != EOF)
     {
         fputc(charecter, output);
     }
     fclose(input);
+    fclose(output);
 
     werase(windowMain);
     wprintw(windowMain, "File Copied Successfully!");
@@ -66,7 +75,10 @@ int file_create(char pathSource[150])
     file = fopen(pathSource, "w");
     error = does_file_exist(file, "w");
     if (error != ERR_NONE)
+    {
+        fclose(file);
         return error;
+    }
     fclose(file);
 
     werase(windowMain);
@@ -90,7 +102,10 @@ int file_show(char pathSource[150])
     error = does_file_exist(file, "r");
 
     if (error != ERR_NONE)
+    {
+        fclose(file);
         return error;
+    }
 
     // destroy_window();
 
@@ -177,13 +192,14 @@ int file_show(char pathSource[150])
 // returns ERR_NONE if the operation is successful
 int file_delete(char pathSource[150])
 {
-    if (remove(pathSource) == 0)
-        return ERR_NONE;
+
+    if (remove(pathSource) != 0)
+        return ERR_FILE_NOT_FOUND;
 
     werase(windowMain);
     wprintw(windowMain, "File Deleted Successfully!");
     wrefresh(windowMain);
     wgetch(windowMain);
 
-    return ERR_FILE_NOT_FOUND;
+    return ERR_NONE;
 }

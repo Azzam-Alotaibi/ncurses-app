@@ -1,4 +1,5 @@
-#include "menu_handler.h"
+#include "window_handler.h"
+#include "errors.h"
 #include "operation_handler.h"
 
 #include <stdlib.h>

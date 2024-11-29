@@ -1,4 +1,4 @@
-#include "menu_handler.h"
+#include "window_handler.h"
 #include "operation_handler.h"
 #include "errors.h"
 
@@ -8,13 +8,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-
-// int main() // todo remove comments
-// {
-//     init_ncruses();
-//     setup_window_operation();
-//     file_show("/home/azzam/Computer-architecture/test.txt");
-// }
 
 int main()
 {
@@ -144,17 +137,16 @@ void operation_file(char *operationName, OperationFileHandler operation)
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
+    // handle exits
+    if (exit_input(pathSource))
+        return;
+
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
-    // TODO handle the errors
-
     error = operation(pathSource);
-    if (error == ERR_FILE_NOT_FOUND)
-    {
-        mvwprintw(windowMain, yPosition, 0, "File not found.");
-        wgetch(windowMain);
-    }
+    print_error(yPosition, error);
+
     // mvwprintw(windowMain, yPosition, 0, "You entered: %s\n", pathSource);
 
     destroy_window(windowMain);
@@ -185,21 +177,24 @@ void operation_file_copy()
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
+    // handle exits
+    if (exit_input(pathSource))
+        return;
+
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, pathDestination);
 
+    // handle exits
+    if (exit_input(pathDestination))
+        return;
+
     yPosition += ceil((strlen(pathDestination) + 6) / WIDTH_OPERATION) + 3;
 
-    // TODO handle the errors
     error = file_copy(pathSource, pathDestination);
-    if (error == ERR_FILE_NOT_FOUND)
-    {
-        mvwprintw(windowMain, yPosition, 0, "File not found.");
-        wgetch(windowMain);
-    }
+    print_error(yPosition, error);
 
     destroy_window(windowMain);
 
@@ -216,7 +211,7 @@ void operation_line_append()
     char newLine[513];
     int yPosition = 0;
     int error;
-    const char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    const char *messageFirst = "Please enter the file's path like this /home/etc/file.txt, if the file doesn't exist, it will create a new file \npath: ";
     const char *messageSecond = "Please enter the new line you'd like to add to the file (max 512 characters) \nNew Line: ";
 
     setup_window_operation();
@@ -229,41 +224,24 @@ void operation_line_append()
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
-    //  is ctrl+c to exit
-    if (strcmp(pathSource, "") == 0 || strcmp(pathSource, "exit") == 0)
-    {
-        destroy_window(windowMain);
-        clear();
-        noecho();
-        refresh();
+    // handle exits
+    if (exit_input(pathSource))
         return;
-    }
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 4;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, newLine);
 
-    //  is ctrl+c to exit
-    if (strcmp(newLine, "") == 0 || strcmp(newLine, "exit") == 0)
-    {
-        destroy_window(windowMain);
-        clear();
-        noecho();
-        refresh();
+    // handle exits
+    if (exit_input(newLine))
         return;
-    }
 
     yPosition += ceil((strlen(newLine) + 10) / WIDTH_OPERATION) + 3;
 
-    // TODO handle the errors
     error = line_append(pathSource, newLine);
-    if (error == ERR_FILE_NOT_FOUND)
-    {
-        mvwprintw(windowMain, yPosition, 0, "File not found.");
-        wgetch(windowMain);
-    }
+    print_error(yPosition, error);
 
     destroy_window(windowMain);
 
@@ -293,15 +271,9 @@ void operation_line_insert()
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
-    //  is ctrl+c to exit
-    if (strcmp(pathSource, "") == 0 || strcmp(pathSource, "exit") == 0)
-    {
-        destroy_window(windowMain);
-        clear();
-        noecho();
-        refresh();
+    // handle exits
+    if (exit_input(pathSource))
         return;
-    }
 
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
@@ -309,36 +281,30 @@ void operation_line_insert()
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, newLine);
 
-    //  is ctrl+c to exit
-    if (strcmp(newLine, "") == 0 || strcmp(newLine, "exit") == 0)
-    {
-        destroy_window(windowMain);
-        clear();
-        noecho();
-        refresh();
+    // handle exits
+    if (exit_input(newLine))
         return;
-    }
 
     yPosition += ceil((strlen(newLine) + 10) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageThird);
     wgetstr(windowMain, lineNumberString);
 
+    // handle exits
+    if (exit_input(lineNumberString))
+        return;
+
     yPosition += ceil((strlen(lineNumberString) + 14) / WIDTH_OPERATION) + 3;
 
     lineNumber = strtol(lineNumberString, &endptr, 10);
-    if (*endptr == '\0')
+    if (*endptr != '\0' || lineNumber == 0)
     {
-        // TODO handle the error
+        invalid_number_error(yPosition);
+        return;
     }
 
-    // TODO handle the errors
     error = line_insert(pathSource, lineNumber, newLine);
-    if (error == ERR_FILE_NOT_FOUND)
-    {
-        mvwprintw(windowMain, yPosition, 0, "File not found.");
-        wgetch(windowMain);
-    }
+    print_error(yPosition, error);
 
     destroy_window(windowMain);
 
@@ -369,15 +335,9 @@ void operation_line(OperationLineHandler operationFunction)
     // passing the str pointer to make the function assign the user inputs to the str
     wgetstr(windowMain, pathSource);
 
-    //  is ctrl+c to exit
-    if (strcmp(pathSource, "") == 0 || strcmp(pathSource, "exit") == 0)
-    {
-        destroy_window(windowMain);
-        clear();
-        noecho();
-        refresh();
+    // handle exits
+    if (exit_input(pathSource))
         return;
-    }
 
     // calculate how many lines is the input and add that to the y position
     yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
@@ -385,33 +345,22 @@ void operation_line(OperationLineHandler operationFunction)
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, lineNumberString);
 
-    //  is the ctrl+c character. then the app will exit
-    if (strcmp(lineNumberString, "") == 0 || strcmp(lineNumberString, "exit") == 0)
-    {
-        destroy_window(windowMain);
-        clear();
-        noecho();
-        refresh();
+    // handle exits
+    if (exit_input(lineNumberString))
         return;
-    }
-
-    // [13]
-    lineNumber = strtol(lineNumberString, &endptr, 10);
-    if (*endptr == '\0')
-    {
-        // TODO handle the error
-    }
 
     yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 2;
 
-    // TODO handle the errors
+    // [13]
+    lineNumber = strtol(lineNumberString, &endptr, 10);
+    if (*endptr != '\0' || lineNumber == 0)
+    {
+        invalid_number_error(yPosition);
+        return;
+    }
 
     error = operationFunction(pathSource, lineNumber);
-    if (error == ERR_FILE_NOT_FOUND)
-    {
-        mvwprintw(windowMain, yPosition, 0, "File not found.");
-        wgetch(windowMain);
-    }
+    print_error(yPosition, error);
 
     destroy_window(windowMain);
 

@@ -16,4 +16,12 @@
 #define ERR_OUT_OF_BOUNDS 4
 #define ERR_UNKNOWN 99
 
+// functions
+
+// error handling
+void print_error(int yPosition, int error);
+void invalid_number_error(int yPosition);
+_Bool is_empty(char *string);
+_Bool exit_input(char *string);
+
 #endif
