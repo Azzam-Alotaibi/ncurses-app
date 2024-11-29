@@ -13,7 +13,7 @@ int line_append(char pathSource[150], const char *newLine)
     int error, currentLine = 1;
 
     file = fopen(pathSource, "a");
-    error = does_file_exist(file);
+    error = does_file_exist(file, "a");
     if (error != ERR_NONE)
         return error;
 
@@ -34,7 +34,7 @@ int line_insert(char pathSource[150], int lineNumber, const char *newLine)
 
     // [15]
     fileMain = fopen(pathSource, "r");
-    error = does_file_exist(fileMain);
+    error = does_file_exist(fileMain, "r");
     if (error != ERR_NONE)
     {
         return error;

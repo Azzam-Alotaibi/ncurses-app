@@ -6,14 +6,18 @@
 #include "operation_handler.h"
 #include "menu_handler.h"
 
-int does_file_exist(FILE *file)
+int does_file_exist(FILE *file, char[1] mode)
 {
     // [14]
     if (file == NULL)
     {
         // [10]
         if (errno == ENOENT)
-            return ERR_FILE_NOT_FOUND;
+        {
+            if (strcmp(mode, "r") == 0)
+                return ERR_FILE_NOT_FOUND;
+            return ERR_FOLDER_NOT_FOUND;
+        }
         if (errno == EACCES)
             return ERR_PERMISSION_DENIED;
         else
@@ -30,12 +34,12 @@ int file_copy(char pathSource[150], char pathDestination[150])
     int error;
 
     input = fopen(pathSource, "r");
-    error = does_file_exist(input);
+    error = does_file_exist(input, "r");
     if (error != ERR_NONE)
         return error;
 
     output = fopen(pathDestination, "w");
-    error = does_file_exist(output);
+    error = does_file_exist(output, "w");
     if (error != ERR_NONE)
         return error;
 
@@ -56,9 +60,11 @@ int file_copy(char pathSource[150], char pathDestination[150])
 // returns ERR_NONE if the operation is successful
 int file_create(char pathSource[150])
 {
+    FILE *file;
+    int error;
 
-    FILE *file = fopen(pathSource, "w");
-    int error = does_file_exist(file);
+    file = fopen(pathSource, "w");
+    error = does_file_exist(file, "w");
     if (error != ERR_NONE)
         return error;
     fclose(file);
@@ -81,7 +87,7 @@ int file_show(char pathSource[150])
     FILE *file;
 
     file = fopen(pathSource, "r");
-    error = does_file_exist(file);
+    error = does_file_exist(file, "r");
 
     if (error != ERR_NONE)
         return error;
