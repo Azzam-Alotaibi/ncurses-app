@@ -117,7 +117,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
 // for duplicating, deleting, creating
 void operation_file(char *operationName, OperationFileHandler operation)
 {
-    char message[100];
+    char message[110];
     int yPosition = 0, error;
     char pathSource[150];
 
@@ -126,7 +126,7 @@ void operation_file(char *operationName, OperationFileHandler operation)
     echo();
 
     // formatting the message string
-    // for some reason, in macos the app needs to specify the message size otherwise it just crashes
+    // for some reason, in MacOS the app needs to specify the message size otherwise it just crashes
     snprintf(message, sizeof(message), "Please enter the file's path to %s file. like this format /home/etc/file.txt \npath: ", operationName);
 
     // we used a string literal to avoid Wformat-security [12]
@@ -142,7 +142,7 @@ void operation_file(char *operationName, OperationFileHandler operation)
         return;
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 4;
 
     error = operation(pathSource);
     print_error(yPosition, error);

@@ -167,7 +167,7 @@ _Bool main_page(int choicesLength, const char *currentItemName)
     }
     if (strcmp(currentItemName, "Choose File") == 0)
     {
-        const char *choices[] = {"Edit File", "Copy File", "Delete File", "Show File", "Go Back", NULL};
+        const char *choices[] = {"Edit File", "Copy File", "Delete File", "Show File", "Line Count", "Go Back", NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
         choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
@@ -226,6 +226,11 @@ _Bool choose_file_page(int choicesLength, const char *currentItemName)
     {
         OperationFileHandler operation = file_show;
         operation_file("show", operation);
+    }
+    else if (strcmp(currentItemName, "Line Count") == 0)
+    {
+        OperationFileHandler operation = file_count_lines;
+        operation_file("count the lines in a", operation);
     }
     return true;
 }

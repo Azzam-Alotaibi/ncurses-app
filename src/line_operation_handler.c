@@ -7,7 +7,7 @@
 #include "operation_handler.h"
 
 // returns ERR_NONE if the operation is successful
-int line_append(char pathSource[150], const char *newLine)
+int line_append(char pathSource[150], char *newLine)
 {
     FILE *file;
     char line[128], tempFileName[] = "_temp.txt";
@@ -31,7 +31,7 @@ int line_append(char pathSource[150], const char *newLine)
 }
 
 // returns ERR_NONE if the operation is successful
-int line_insert(char pathSource[150], int lineNumber, const char *newLine)
+int line_insert(char pathSource[150], int lineNumber, char *newLine)
 {
 
     FILE *fileMain, *fileTemp;

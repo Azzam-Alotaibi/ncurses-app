@@ -203,3 +203,41 @@ int file_delete(char pathSource[150])
 
     return ERR_NONE;
 }
+
+// returns ERR_NONE if the operation is successful
+int file_count_lines(char pathSource[150])
+{
+    FILE *file = fopen(pathSource, "r");
+    char character;
+    int lineCount = 1, error;
+
+    error = does_file_exist(file, "r");
+    if (error != ERR_NONE)
+    {
+        fclose(file);
+        return error;
+    }
+
+    while ((character = fgetc(file)) != EOF)
+    {
+        if (character == '\n')
+            lineCount++;
+    }
+    fclose(file);
+
+    werase(windowMain);
+    wprintw(windowMain, "The number of lines in the file: %d", lineCount);
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
+    // while (!feof(fp))
+    // {
+    //     ch = fgetc(fp);
+    //     if (ch == '\n')
+    //     {
+    //         lines++;
+    //     }
+    // }
+
+    return ERR_NONE;
+}
