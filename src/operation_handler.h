@@ -11,11 +11,12 @@ int file_delete(char *pathSource);
 int file_count_lines(char *pathSource);
 int does_file_exist(FILE *file, char mode[1]);
 
-// line manupilation functions
+// text manupilation functions
 int line_append(char *pathSource, char *newLine);
 int line_insert(char *pathSource, int lineNumber, char *newLine);
 int line_delete(char *pathSource, int lineNumber);
 int line_show(char *pathSource, int lineNumber);
+int text_replace(char *pathSource, char *textOriginal, char *textReplace);
 
 // for loging
 void log_operation(char *line);

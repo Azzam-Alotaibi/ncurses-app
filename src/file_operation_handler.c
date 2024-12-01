@@ -103,7 +103,8 @@ int file_show(char *pathSource)
 
     int lineCount = 0, error, character, lastOperation, index, lineWidth = 0;
     // the width of the window
-    char line[WIDTH_OPERATION], logMessage[300];
+    // buffers holds a chunck of data one at a time to reduce I/O system operations (input and output like printing and reading from a file)
+    char buffer[WIDTH_OPERATION], logMessage[300];
     FILE *file;
 
     file = fopen(pathSource, "r");
@@ -141,14 +142,14 @@ int file_show(char *pathSource)
     // if the screen doesn't need to scroll
     if (lineCount <= HEIGHT)
     {
-        while (fgets(line, sizeof(line), file))
+        while (fgets(buffer, sizeof(buffer), file))
         {
-            wprintw(windowMain, "%s", line);
+            wprintw(windowMain, "%s", buffer);
         }
         wgetch(windowMain);
         fclose(file);
         lineCount += 1;
-        snprintf(logMessage, sizeof(logMessage), "you showed the file: \"%s\", and it had %d lines", pathSource, lineCount);
+        snprintf(logMessage, sizeof(logMessage), "showed the file: \"%s\", and it had %d lines", pathSource, lineCount);
         log_operation(logMessage);
         return ERR_NONE;
     }
@@ -158,14 +159,14 @@ int file_show(char *pathSource)
     char fileContent[lineCount][WIDTH_OPERATION];
     for (int i = 0; i < lineCount; i++)
     {
-        fgets(line, sizeof(line), file);
+        fgets(buffer, sizeof(buffer), file);
 
         // this line replaces the the first "\n" occurence with null "\0".
         // the way fgets work, is to stop if it encounters a new line "\n" or the sizeof(line) is all used up.
         // hence, the new line "\n" was sabotaging the custom scroll implementation so I had to delete it
         // [13]
-        strtok(line, "\n");
-        strcpy(fileContent[i], line);
+        strtok(buffer, "\n");
+        strcpy(fileContent[i], buffer);
     }
     fclose(file);
     for (int i = 0; i < HEIGHT; i++)
@@ -212,7 +213,7 @@ int file_show(char *pathSource)
             break;
         case 'q':
             lineCount += 1;
-            snprintf(logMessage, sizeof(logMessage), "you showed the file: \"%s\", and it had %d lines", pathSource, lineCount);
+            snprintf(logMessage, sizeof(logMessage), "showed the file: \"%s\", and it had %d lines", pathSource, lineCount);
             log_operation(logMessage);
             return ERR_NONE;
         }
@@ -234,7 +235,7 @@ int file_delete(char *pathSource)
     wrefresh(windowMain);
     wgetch(windowMain);
 
-    snprintf(logMessage, sizeof(logMessage), "you deleted the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    snprintf(logMessage, sizeof(logMessage), "deleted the file: \"%s\", and it had %d lines", pathSource, lineCount);
     log_operation(logMessage);
 
     return ERR_NONE;
@@ -251,6 +252,7 @@ int file_count_lines(char *pathSource)
     if (error != ERR_NONE)
     {
         fclose(file);
+
         return error;
     }
 
@@ -266,7 +268,7 @@ int file_count_lines(char *pathSource)
     wrefresh(windowMain);
     wgetch(windowMain);
 
-    snprintf(logMessage, sizeof(logMessage), "you counted the lines of the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    snprintf(logMessage, sizeof(logMessage), "counted the lines of the file: \"%s\", and it had %d lines", pathSource, lineCount);
     log_operation(logMessage);
     return ERR_NONE;
 }

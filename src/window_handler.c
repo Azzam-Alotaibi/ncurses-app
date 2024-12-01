@@ -212,7 +212,7 @@ _Bool choose_file_page(int choicesLength, const char *currentItemName)
     }
     if (strcmp(currentItemName, "Edit File") == 0)
     {
-        const char *choices[] = {"Append Line", "Insert Line", "Delete Line", "Show Line", "Go Back", NULL};
+        const char *choices[] = {"Append Line", "Insert Line", "Delete Line", "Show Line", "Replace Text", "Go Back", NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
         choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
@@ -253,21 +253,25 @@ _Bool edit_file_page(int choicesLength, const char *currentItemName)
     // TODO append/insert/delete/show line
     if (strcmp(currentItemName, "Append Line") == 0)
     {
-        operation_line_append();
+        operation_line_append_UI();
     }
-    if (strcmp(currentItemName, "Insert Line") == 0)
+    else if (strcmp(currentItemName, "Insert Line") == 0)
     {
-        operation_line_insert();
+        operation_line_insert_UI();
     }
-    if (strcmp(currentItemName, "Delete Line") == 0)
+    else if (strcmp(currentItemName, "Delete Line") == 0)
     {
         OperationLineHandler operation = line_delete;
-        operation_line(operation);
+        operation_line_UI(operation);
     }
-    if (strcmp(currentItemName, "Show Line") == 0)
+    else if (strcmp(currentItemName, "Replace Text") == 0)
+    {
+        text_replace_UI();
+    }
+    else if (strcmp(currentItemName, "Show Line") == 0)
     {
         OperationLineHandler operation = line_show;
-        operation_line(operation);
+        operation_line_UI(operation);
     }
     return true;
 }

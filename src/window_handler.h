@@ -42,8 +42,9 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
 // operation
 void operation_file(char *operationName, OperationFileHandler operation);
 void operation_file_copy();
-void operation_line(OperationLineHandler operationFunction);
-void operation_line_append();
-void operation_line_insert();
+void operation_line_UI(OperationLineHandler operationFunction);
+void operation_line_append_UI();
+void operation_line_insert_UI();
+void text_replace_UI();
 
 #endif

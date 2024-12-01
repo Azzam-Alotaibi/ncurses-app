@@ -144,7 +144,7 @@ void operation_file(char *operationName, OperationFileHandler operation)
         return;
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 4;
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 4;
 
     error = operation(pathSource);
     print_error(yPosition, error);
@@ -184,7 +184,7 @@ void operation_file_copy()
         return;
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, pathDestination);
@@ -207,7 +207,7 @@ void operation_file_copy()
     refresh();
 }
 
-void operation_line_append()
+void operation_line_append_UI()
 {
     char pathSource[150];
     char newLine[513];
@@ -231,7 +231,7 @@ void operation_line_append()
         return;
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 4;
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 4;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, newLine);
@@ -254,7 +254,7 @@ void operation_line_append()
     refresh();
 }
 
-void operation_line_insert()
+void operation_line_insert_UI()
 {
     char pathSource[150], newLine[513], lineNumberString[10];
     char *endptr;
@@ -278,7 +278,7 @@ void operation_line_insert()
         return;
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, newLine);
@@ -317,19 +317,19 @@ void operation_line_insert()
     refresh();
 }
 
-void operation_line(OperationLineHandler operationFunction)
+void operation_line_UI(OperationLineHandler operationFunction)
 {
-    char messageFirst[85], pathSource[150], lineNumberString[10];
+    char pathSource[150], lineNumberString[10];
     char *endptr;
     int lineNumber, error, yPosition = 0;
-    char messageSecond[] = "Please enter the line number: ";
+    char *messageSecond = "Please enter the line number: ";
+    char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
 
     setup_window_operation();
     // [9]
     echo();
 
     // formatting the message string
-    sprintf(messageFirst, "Please enter the file's path like this /home/etc/file.txt \npath: ");
 
     // we used a string literal to avoid Wformat-security [12]
     // print prompt the following prompt at the piont (0, 0)
@@ -342,7 +342,7 @@ void operation_line(OperationLineHandler operationFunction)
         return;
 
     // calculate how many lines is the input and add that to the y position
-    yPosition = ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
 
     mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
     wgetstr(windowMain, lineNumberString);
@@ -351,7 +351,7 @@ void operation_line(OperationLineHandler operationFunction)
     if (exit_input(lineNumberString))
         return;
 
-    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 2;
+    yPosition += ceil((strlen(lineNumberString) + 6) / WIDTH_OPERATION) + 2;
 
     // [13]
     lineNumber = strtol(lineNumberString, &endptr, 10);
@@ -384,4 +384,62 @@ void log_operation(char *line)
     strtok(timeString, "\n");
     fprintf(file, "%s:%s\n", timeString, line);
     fclose(file);
+}
+
+void text_replace_UI()
+{
+    char pathSource[150], textOriginal[513], textNew[513];
+    char *endptr;
+    int lineNumber, error, yPosition = 0;
+    char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    char *messageSecond = "Please enter the text you'd like to replace (max 512 characters): ";
+    char *messageThird = "Please enter the new text (max 512 characters): ";
+
+    setup_window_operation();
+    // [9]
+    echo();
+
+    // formatting the message string
+
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", messageFirst);
+    // passing the str pointer to make the function assign the user inputs to the str
+    wgetstr(windowMain, pathSource);
+
+    // handle exits
+    if (exit_input(pathSource))
+        return;
+
+    // calculate how many lines is the input and add that to the y position
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
+    wgetstr(windowMain, textOriginal);
+
+    // handle exits
+    if (exit_input(textOriginal))
+        return;
+
+    yPosition += ceil((strlen(textOriginal) + strlen(messageSecond)) / WIDTH_OPERATION) + 3;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageThird);
+    wgetstr(windowMain, textNew);
+
+    // handle exits
+    if (exit_input(textNew))
+        return;
+
+    yPosition += ceil((strlen(textNew) + strlen(messageThird)) / WIDTH_OPERATION) + 3;
+
+    error = text_replace(pathSource, textOriginal, textNew);
+    print_error(yPosition, error);
+
+    destroy_window(windowMain);
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    noecho();
+    refresh();
 }
