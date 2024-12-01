@@ -151,9 +151,11 @@ void setup_window_operation()
 
 void clean_exit()
 {
-    mvwprintw(windowMain, 5, 5, "Comeback later!");
-    wgetch(windowMain);
-    destroy_window(windowMain);
+    char message[] = "Comeback later!";
+
+    // center the message
+    mvprintw(LINES / 2, (COLS - strlen(message)) / 2, message);
+    getch();
     endwin();
     exit(0);
 }
@@ -183,14 +185,21 @@ _Bool main_page(int choicesLength, const char *currentItemName)
     }
     else if (strcmp(currentItemName, "Show Log") == 0)
     {
-        const char *choices[] = {"In Terminal", "Print File", "Go Back", NULL};
+        int error;
 
-        // takes the size of the array and divide it by the first elements to get the full length without the NULL
-        choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+        setup_window_operation();
 
-        // [8]
-        EnterKeyHandler function = choose_file_page;
-        super_duper_recursion(function, choicesLength, choices);
+        error = file_show("logs.txt");
+        print_error(0, error);
+
+        // mvwprintw(windowMain, yPosition, 0, "You entered: %s\n", pathSource);
+
+        destroy_window(windowMain);
+
+        // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+        // [11]
+        clear();
+        refresh();
     }
     return true;
 }
@@ -260,23 +269,5 @@ _Bool edit_file_page(int choicesLength, const char *currentItemName)
         OperationLineHandler operation = line_show;
         operation_line(operation);
     }
-    return true;
-}
-
-_Bool show_log_page(int choicesLength, const char *currentItemName)
-{
-    if (strcmp(currentItemName, "Go Back") == 0)
-    {
-        return false;
-    }
-
-    // TODO in the terminal/as a text file
-    else if (strcmp(currentItemName, "In Terminal") == 0)
-    {
-    }
-    else if (strcmp(currentItemName, "Print File") == 0)
-    {
-    }
-
     return true;
 }

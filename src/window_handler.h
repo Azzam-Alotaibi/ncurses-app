@@ -35,7 +35,6 @@ void edit_page();
 _Bool main_page(int choicesLength, const char *currentItemName);
 _Bool choose_file_page(int choicesLength, const char *currentItemName);
 _Bool edit_file_page(int choicesLength, const char *currentItemName);
-_Bool show_log_page(int choicesLength, const char *currentItemName);
 
 // layout
 void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, const char **choices);

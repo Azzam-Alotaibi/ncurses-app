@@ -108,6 +108,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             break;
         case 'q':
             cleanup_menu(menu, items, choicesLength);
+            destroy_window(windowMain);
             clean_exit();
             break;
         }

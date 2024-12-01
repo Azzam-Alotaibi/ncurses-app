@@ -101,9 +101,9 @@ int file_create(char pathSource[150])
 int file_show(char pathSource[150])
 {
 
-    int lineCount = 0, error, ch, lastOperation, index;
+    int lineCount = 0, error, character, lastOperation, index, lineWidth = 0;
     // the width of the window
-    char line[WIDTH_OPERATION + 1], logMessage[300];
+    char line[WIDTH_OPERATION], logMessage[300];
     FILE *file;
 
     file = fopen(pathSource, "r");
@@ -117,18 +117,29 @@ int file_show(char pathSource[150])
 
     // destroy_window();
 
-    while (fgets(line, sizeof(line), file))
+    while ((character = fgetc(file)) != EOF)
     {
-        lineCount++;
+        lineWidth++;
+        if (lineWidth == WIDTH_OPERATION - 1)
+        {
+            lineWidth = 0;
+            lineCount++;
+        }
+        else if (character == '\n')
+        {
+            lineWidth = 0;
+            lineCount++;
+        }
     }
 
     // to reset the pointer to the start of the file
     fseek(file, 0, SEEK_SET);
 
-    // deletes
+    // deletes the previuos screen content
     werase(windowMain);
     wrefresh(windowMain);
-    if (lineCount < HEIGHT)
+    // if the screen doesn't need to scroll
+    if (lineCount <= HEIGHT)
     {
         while (fgets(line, sizeof(line), file))
         {
@@ -142,7 +153,9 @@ int file_show(char pathSource[150])
         return ERR_NONE;
     }
 
-    char fileContent[lineCount][WIDTH_OPERATION + 1];
+    // in this section, the screen needs to scroll
+
+    char fileContent[lineCount][WIDTH_OPERATION];
     for (int i = 0; i < lineCount; i++)
     {
         fgets(line, sizeof(line), file);
@@ -158,6 +171,7 @@ int file_show(char pathSource[150])
     for (int i = 0; i < HEIGHT; i++)
     {
         mvwprintw(windowMain, i, 0, "%s", fileContent[i]);
+        wrefresh(windowMain);
     }
     // mvwprintw(windowMain, HEIGHT - 1, 0, "%s", fileContent[HEIGHT - 1]);
 
@@ -166,9 +180,9 @@ int file_show(char pathSource[150])
     // custom scrolling in the terminal
     while (true)
     {
-        ch = wgetch(windowMain);
+        character = wgetch(windowMain);
 
-        switch (ch)
+        switch (character)
         {
         case KEY_UP:
             if (lastOperation == KEY_DOWN)
@@ -193,6 +207,7 @@ int file_show(char pathSource[150])
             // scroll down
             wscrl(windowMain, 1);
             mvwprintw(windowMain, HEIGHT - 1, 0, "%s", fileContent[index]);
+            wrefresh(windowMain);
 
             break;
         case 'q':
