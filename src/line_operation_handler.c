@@ -10,8 +10,8 @@
 int line_append(char pathSource[150], char *newLine)
 {
     FILE *file;
-    char line[128], tempFileName[] = "_temp.txt";
-    int error, currentLine = 1;
+    char line[128], tempFileName[] = "_temp.txt", logMessage[300];
+    int error, lineCount;
 
     file = fopen(pathSource, "a");
     error = does_file_exist(file, "a");
@@ -27,6 +27,10 @@ int line_append(char pathSource[150], char *newLine)
     wrefresh(windowMain);
     wgetch(windowMain);
 
+    lineCount = file_count_lines_without_window(pathSource);
+    snprintf(logMessage, sizeof(logMessage), "you appended a line to the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    log_operation(logMessage);
+
     return ERR_NONE;
 }
 
@@ -35,8 +39,8 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine)
 {
 
     FILE *fileMain, *fileTemp;
-    char line[128], tempFileName[] = "_temp.txt";
-    int error, currentLine = 1;
+    char tempFileName[] = "_temp.txt", logMessage[300];
+    int error, currentLine = 1, character;
 
     // [15]
     fileMain = fopen(pathSource, "r");
@@ -47,20 +51,17 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine)
         return error;
     }
     fileTemp = fopen(tempFileName, "w");
-    while (fgets(line, sizeof(line), fileMain))
+    while ((character = fgetc(fileMain)) != EOF)
     {
-
+        if (character == '\n')
+            currentLine++;
+        fputc(character, fileTemp);
         if (currentLine == lineNumber)
         {
-            // since the last line don't have \n, to stay consistent, we have to remove it and always add it.
-            strtok(line, "\n");
-            fprintf(fileTemp, "%s\n%s\n", newLine, line);
+
+            fprintf(fileTemp, "%s\n", newLine);
+            currentLine++;
         }
-        else
-        {
-            fprintf(fileTemp, "%s", line);
-        }
-        currentLine++;
     }
 
     fclose(fileMain);
@@ -78,15 +79,18 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine)
     wrefresh(windowMain);
     wgetch(windowMain);
 
+    snprintf(logMessage, sizeof(logMessage), "you inserted a line to the file: \"%s\", and it had %d lines", pathSource, currentLine);
+    log_operation(logMessage);
+
     return ERR_NONE;
 }
 
 // returns ERR_NONE if the operation is successful
-int line_delete(char pathSource[80], int lineNumber)
+int line_delete(char pathSource[150], int lineNumber)
 {
     FILE *fileMain, *fileTemp;
-    char line[128], tempFileName[] = "_temp.txt";
-    int error, currentLine = 1;
+    char tempFileName[] = "_temp.txt", logMessage[300];
+    int error, currentLine = 1, lineLength, character;
 
     // [15]
     fileMain = fopen(pathSource, "r");
@@ -98,14 +102,13 @@ int line_delete(char pathSource[80], int lineNumber)
     }
 
     fileTemp = fopen(tempFileName, "w");
-    while (fgets(line, sizeof(line), fileMain))
+    while ((character = fgetc(fileMain)) != EOF)
     {
+        if (character == '\n')
+            currentLine++;
 
         if (currentLine != lineNumber)
-        {
-            fprintf(fileTemp, "%s", line);
-        }
-        currentLine++;
+            fputc(character, fileTemp);
     }
 
     fclose(fileMain);
@@ -123,15 +126,18 @@ int line_delete(char pathSource[80], int lineNumber)
     wrefresh(windowMain);
     wgetch(windowMain);
 
+    snprintf(logMessage, sizeof(logMessage), "you deleted the %d line in the file: \"%s\", and it had %d lines", lineNumber, pathSource, currentLine - 1);
+    log_operation(logMessage);
+
     return ERR_NONE;
 }
 
 // returns ERR_NONE if the operation is successful
-int line_show(char pathSource[80], int lineNumber)
+int line_show(char pathSource[150], int lineNumber)
 {
     FILE *fileMain;
-    char line[128];
-    int error, currentLine = 1;
+    char logMessage[300];
+    int error, currentLine = 1, character;
 
     // [15]
     fileMain = fopen(pathSource, "r");
@@ -142,22 +148,27 @@ int line_show(char pathSource[80], int lineNumber)
         return error;
     }
 
-    while (fgets(line, sizeof(line), fileMain))
+    werase(windowMain);
+    while ((character = fgetc(fileMain)) != EOF)
     {
+        if (character == '\n')
+            currentLine++;
 
         if (currentLine == lineNumber)
         {
-            werase(windowMain);
-            wprintw(windowMain, "%s", line);
+            wprintw(windowMain, "%c", character);
             wrefresh(windowMain);
-            wgetch(windowMain);
-            fclose(fileMain);
-            return ERR_NONE;
         }
-        currentLine++;
     }
-
     fclose(fileMain);
 
-    return ERR_OUT_OF_BOUNDS;
+    if (lineNumber > currentLine)
+        return ERR_OUT_OF_BOUNDS;
+
+    wgetch(windowMain);
+
+    snprintf(logMessage, sizeof(logMessage), "you showed the %d line in the file: \"%s\", and it had %d lines", lineNumber, pathSource, currentLine);
+    log_operation(logMessage);
+
+    return ERR_NONE;
 }

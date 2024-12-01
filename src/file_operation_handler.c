@@ -29,10 +29,9 @@ int does_file_exist(FILE *file, char mode[1])
 
 int file_copy(char pathSource[150], char pathDestination[150])
 {
-    FILE *input;
-    FILE *output;
-    int charecter;
-    int error;
+    FILE *input, *output;
+    int charecter, error, lineCount;
+    char logMessage[400];
 
     input = fopen(pathSource, "r");
     error = does_file_exist(input, "r");
@@ -63,6 +62,10 @@ int file_copy(char pathSource[150], char pathDestination[150])
     wrefresh(windowMain);
     wgetch(windowMain);
 
+    lineCount = file_count_lines_without_window(pathSource);
+    snprintf(logMessage, sizeof(logMessage), "copied the file: \"%s\" to the destination: \"%s\", and it had %d lines", pathSource, pathDestination, lineCount);
+    log_operation(logMessage);
+
     return ERR_NONE;
 }
 
@@ -70,7 +73,8 @@ int file_copy(char pathSource[150], char pathDestination[150])
 int file_create(char pathSource[150])
 {
     FILE *file;
-    int error;
+    int error, lineCount;
+    char logMessage[300];
 
     file = fopen(pathSource, "w");
     error = does_file_exist(file, "w");
@@ -86,6 +90,10 @@ int file_create(char pathSource[150])
     wrefresh(windowMain);
     wgetch(windowMain);
 
+    lineCount = file_count_lines_without_window(pathSource);
+    snprintf(logMessage, sizeof(logMessage), "created the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    log_operation(logMessage);
+
     return ERR_NONE;
 }
 
@@ -95,7 +103,7 @@ int file_show(char pathSource[150])
 
     int lineCount = 0, error, ch, lastOperation, index;
     // the width of the window
-    char line[WIDTH_OPERATION + 1];
+    char line[WIDTH_OPERATION + 1], logMessage[300];
     FILE *file;
 
     file = fopen(pathSource, "r");
@@ -128,6 +136,9 @@ int file_show(char pathSource[150])
         }
         wgetch(windowMain);
         fclose(file);
+        lineCount += 1;
+        snprintf(logMessage, sizeof(logMessage), "you showed the file: \"%s\", and it had %d lines", pathSource, lineCount);
+        log_operation(logMessage);
         return ERR_NONE;
     }
 
@@ -185,6 +196,9 @@ int file_show(char pathSource[150])
 
             break;
         case 'q':
+            lineCount += 1;
+            snprintf(logMessage, sizeof(logMessage), "you showed the file: \"%s\", and it had %d lines", pathSource, lineCount);
+            log_operation(logMessage);
             return ERR_NONE;
         }
     }
@@ -192,6 +206,10 @@ int file_show(char pathSource[150])
 // returns ERR_NONE if the operation is successful
 int file_delete(char pathSource[150])
 {
+    char logMessage[300];
+    int lineCount;
+
+    lineCount = file_count_lines_without_window(pathSource);
 
     if (remove(pathSource) != 0)
         return ERR_FILE_NOT_FOUND;
@@ -201,6 +219,9 @@ int file_delete(char pathSource[150])
     wrefresh(windowMain);
     wgetch(windowMain);
 
+    snprintf(logMessage, sizeof(logMessage), "you deleted the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    log_operation(logMessage);
+
     return ERR_NONE;
 }
 
@@ -208,7 +229,7 @@ int file_delete(char pathSource[150])
 int file_count_lines(char pathSource[150])
 {
     FILE *file = fopen(pathSource, "r");
-    char character;
+    char character, logMessage[300];
     int lineCount = 1, error;
 
     error = does_file_exist(file, "r");
@@ -230,14 +251,31 @@ int file_count_lines(char pathSource[150])
     wrefresh(windowMain);
     wgetch(windowMain);
 
-    // while (!feof(fp))
-    // {
-    //     ch = fgetc(fp);
-    //     if (ch == '\n')
-    //     {
-    //         lines++;
-    //     }
-    // }
-
+    snprintf(logMessage, sizeof(logMessage), "you counted the lines of the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    log_operation(logMessage);
     return ERR_NONE;
+}
+
+// returns ERR_NONE if the operation is successful
+int file_count_lines_without_window(char pathSource[150])
+{
+    FILE *file = fopen(pathSource, "r");
+    char character, logMessage[300];
+    int lineCount = 1, error;
+
+    error = does_file_exist(file, "r");
+    if (error != ERR_NONE)
+    {
+        fclose(file);
+        return error;
+    }
+
+    while ((character = fgetc(file)) != EOF)
+    {
+        if (character == '\n')
+            lineCount++;
+    }
+    fclose(file);
+
+    return lineCount;
 }

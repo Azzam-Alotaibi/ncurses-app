@@ -17,4 +17,8 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine);
 int line_delete(char pathSource[150], int lineNumber);
 int line_show(char pathSource[150], int lineNumber);
 
+// for loging
+void log_operation(char *line);
+int file_count_lines_without_window(char pathSource[150]);
+
 #endif

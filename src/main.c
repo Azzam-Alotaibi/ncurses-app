@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 int main()
 {
@@ -23,12 +24,12 @@ int main()
 
     init_ncruses();
 
-    if (LINES < MINIMUM_WIDTH)
-    {
-        endwin();
-        printf("Your window is too narrow, sorry you can't open the app.\n");
-        exit(0);
-    }
+    // if (LINES < MINIMUM_WIDTH)
+    // {
+    //     endwin();
+    //     printf("Your window's height  is too narrow, sorry you can't open the app.\n");
+    //     exit(0);
+    // }
 
     // setting the function pointer to the main page functionality
     EnterKeyHandler main_pg = main_page;
@@ -369,4 +370,17 @@ void operation_line(OperationLineHandler operationFunction)
     clear();
     noecho();
     refresh();
+}
+
+void log_operation(char *line)
+{
+    time_t timeCurrent;
+    FILE *file;
+
+    timeCurrent = time(0);
+    char *timeString = ctime(&timeCurrent);
+    file = fopen("logs.txt", "a");
+    strtok(timeString, "\n");
+    fprintf(file, "%s:%s\n", timeString, line);
+    fclose(file);
 }
