@@ -27,7 +27,7 @@ int does_file_exist(FILE *file, char mode[1])
     return ERR_NONE;
 }
 
-int file_copy(char pathSource[150], char pathDestination[150])
+int file_copy(char *pathSource, char pathDestination[150])
 {
     FILE *input, *output;
     int charecter, error, lineCount;
@@ -70,7 +70,7 @@ int file_copy(char pathSource[150], char pathDestination[150])
 }
 
 // returns ERR_NONE if the operation is successful
-int file_create(char pathSource[150])
+int file_create(char *pathSource)
 {
     FILE *file;
     int error, lineCount;
@@ -98,7 +98,7 @@ int file_create(char pathSource[150])
 }
 
 // returns ERR_NONE if the operation is successful
-int file_show(char pathSource[150])
+int file_show(char *pathSource)
 {
 
     int lineCount = 0, error, character, lastOperation, index, lineWidth = 0;
@@ -219,7 +219,7 @@ int file_show(char pathSource[150])
     }
 }
 // returns ERR_NONE if the operation is successful
-int file_delete(char pathSource[150])
+int file_delete(char *pathSource)
 {
     char logMessage[300];
     int lineCount;
@@ -241,7 +241,7 @@ int file_delete(char pathSource[150])
 }
 
 // returns ERR_NONE if the operation is successful
-int file_count_lines(char pathSource[150])
+int file_count_lines(char *pathSource)
 {
     FILE *file = fopen(pathSource, "r");
     char character, logMessage[300];
@@ -272,7 +272,7 @@ int file_count_lines(char pathSource[150])
 }
 
 // returns ERR_NONE if the operation is successful
-int file_count_lines_without_window(char pathSource[150])
+int file_count_lines_without_window(char *pathSource)
 {
     FILE *file = fopen(pathSource, "r");
     char character, logMessage[300];

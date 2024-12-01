@@ -42,7 +42,7 @@ void cleanup_menu(MENU *menu, ITEM **items, int itemsLength)
     {
         free_item(items[i]);
     }
-    // free the memory allocated/reserved by the array which used malloc
+    // free the memory allocated/reserved by the array which used calloc
     free(items);
 }
 

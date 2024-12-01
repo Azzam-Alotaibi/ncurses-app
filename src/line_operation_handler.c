@@ -7,16 +7,19 @@
 #include "operation_handler.h"
 
 // returns ERR_NONE if the operation is successful
-int line_append(char pathSource[150], char *newLine)
+int line_append(char *pathSource, char *newLine)
 {
     FILE *file;
-    char line[128], tempFileName[] = "_temp.txt", logMessage[300];
+    char line[128], logMessage[300];
     int error, lineCount;
 
     file = fopen(pathSource, "a");
     error = does_file_exist(file, "a");
     if (error != ERR_NONE)
+    {
+        fclose(file);
         return error;
+    }
 
     // appending the new line to the file
     fprintf(file, "%s\n", newLine);
@@ -35,11 +38,11 @@ int line_append(char pathSource[150], char *newLine)
 }
 
 // returns ERR_NONE if the operation is successful
-int line_insert(char pathSource[150], int lineNumber, char *newLine)
+int line_insert(char *pathSource, int lineNumber, char *newLine)
 {
 
     FILE *fileMain, *fileTemp;
-    char tempFileName[] = "_temp.txt", logMessage[300];
+    char fileTempName[] = "_temp.txt", logMessage[300];
     int error, currentLine = 1, character;
 
     // [15]
@@ -50,7 +53,14 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine)
         fclose(fileMain);
         return error;
     }
-    fileTemp = fopen(tempFileName, "w");
+    fileTemp = fopen(fileTempName, "w");
+    error = does_file_exist(fileTemp, "w");
+    if (error != ERR_NONE)
+    {
+        fclose(fileMain);
+        fclose(fileTemp);
+        return error;
+    }
     while ((character = fgetc(fileMain)) != EOF)
     {
         if (character == '\n')
@@ -69,7 +79,7 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine)
 
     // replace the main file with the temporary file that have been modified and
     remove(pathSource);
-    rename(tempFileName, pathSource);
+    rename(fileTempName, pathSource);
 
     if (currentLine <= lineNumber)
         return ERR_OUT_OF_BOUNDS;
@@ -86,10 +96,10 @@ int line_insert(char pathSource[150], int lineNumber, char *newLine)
 }
 
 // returns ERR_NONE if the operation is successful
-int line_delete(char pathSource[150], int lineNumber)
+int line_delete(char *pathSource, int lineNumber)
 {
     FILE *fileMain, *fileTemp;
-    char tempFileName[] = "_temp.txt", logMessage[300];
+    char fileTempName[] = "_temp.txt", logMessage[300];
     int error, currentLine = 1, lineLength, character;
 
     // [15]
@@ -101,7 +111,15 @@ int line_delete(char pathSource[150], int lineNumber)
         return error;
     }
 
-    fileTemp = fopen(tempFileName, "w");
+    fileTemp = fopen(fileTempName, "w");
+    error = does_file_exist(fileTemp, "w");
+    if (error != ERR_NONE)
+    {
+        fclose(fileMain);
+        fclose(fileTemp);
+
+        return error;
+    }
     while ((character = fgetc(fileMain)) != EOF)
     {
         if (character == '\n')
@@ -116,7 +134,7 @@ int line_delete(char pathSource[150], int lineNumber)
 
     // replace the main file with the temporary file that have been modified and
     remove(pathSource);
-    rename(tempFileName, pathSource);
+    rename(fileTempName, pathSource);
 
     if (currentLine <= lineNumber)
         return ERR_OUT_OF_BOUNDS;
@@ -133,7 +151,7 @@ int line_delete(char pathSource[150], int lineNumber)
 }
 
 // returns ERR_NONE if the operation is successful
-int line_show(char pathSource[150], int lineNumber)
+int line_show(char *pathSource, int lineNumber)
 {
     FILE *fileMain;
     char logMessage[300];
@@ -171,4 +189,32 @@ int line_show(char pathSource[150], int lineNumber)
     log_operation(logMessage);
 
     return ERR_NONE;
+}
+
+// returns ERR_NONE if the operation is successful
+int text_replace(char *pathSource, char *textOriginal, char *textReplace)
+{
+
+    FILE *fileMain, *fileTemp;
+    char logMessage[300], fileTempName[] = "_temp.txt";
+    int error, character;
+
+    fileMain = fopen(pathSource, "r");
+    error = does_file_exist(fileMain, "r");
+    if (error != ERR_NONE)
+    {
+        fclose(fileMain);
+        return error;
+    }
+
+    fileTemp = fopen(fileTempName, "w");
+    error = does_file_exist(fileTemp, "w");
+    if (error != ERR_NONE)
+    {
+        fclose(fileMain);
+        fclose(fileTemp);
+        return error;
+    }
+
+    return 0;
 }

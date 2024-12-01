@@ -4,21 +4,21 @@
 #define FILE_OPERATION_H
 
 // file manupilation functions
-int file_copy(char pathSource[150], char pathDestination[150]);
-int file_create(char pathSource[150]);
-int file_show(char pathSource[150]);
-int file_delete(char pathSource[150]);
+int file_copy(char *pathSource, char *pathDestination);
+int file_create(char *pathSource);
+int file_show(char *pathSource);
+int file_delete(char *pathSource);
+int file_count_lines(char *pathSource);
 int does_file_exist(FILE *file, char mode[1]);
-int file_count_lines(char pathSource[150]);
 
 // line manupilation functions
-int line_append(char pathSource[150], char *newLine);
-int line_insert(char pathSource[150], int lineNumber, char *newLine);
-int line_delete(char pathSource[150], int lineNumber);
-int line_show(char pathSource[150], int lineNumber);
+int line_append(char *pathSource, char *newLine);
+int line_insert(char *pathSource, int lineNumber, char *newLine);
+int line_delete(char *pathSource, int lineNumber);
+int line_show(char *pathSource, int lineNumber);
 
 // for loging
 void log_operation(char *line);
-int file_count_lines_without_window(char pathSource[150]);
+int file_count_lines_without_window(char *pathSource);
 
 #endif

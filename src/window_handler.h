@@ -16,8 +16,8 @@ extern int WIDTH_OPERATION;
 
 // a funciton pointer to change the layout in each page
 typedef bool (*EnterKeyHandler)(int choicesLength, const char *currentItemName);
-typedef int (*OperationFileHandler)(char pathSource[150]);
-typedef int (*OperationLineHandler)(char pathSource[150], int lineNumber);
+typedef int (*OperationFileHandler)(char *pathSource);
+typedef int (*OperationLineHandler)(char *pathSource, int lineNumber);
 
 // function prototypes
 
