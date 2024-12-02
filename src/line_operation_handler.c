@@ -274,7 +274,14 @@ int text_replace(char *pathSource, char *textOriginal, char *textNew)
         if (characterCount == indexReplace)
         {
             if (index == 0)
-                fputs(textNew, fileTemp);
+            {
+                if (strcmp(textNew, "") == 0)
+                    fputs("", fileTemp);
+                else
+                {
+                    fputs(textNew, fileTemp);
+                }
+            }
             if (index == textOriginalSize - 1)
             {
                 characterCount++;

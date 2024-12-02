@@ -151,10 +151,10 @@ void setup_window_operation()
 
 void clean_exit()
 {
-    char message[] = "Comeback later!";
+    char message[] = "Comeback Later!";
 
     // center the message
-    mvprintw(LINES / 2, (COLS - strlen(message)) / 2, message);
+    mvprintw(LINES / 2, (COLS - strlen(message)) / 2, "%s", message);
     getch();
     endwin();
     exit(0);

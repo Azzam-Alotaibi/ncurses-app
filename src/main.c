@@ -1,7 +1,6 @@
 #include "window_handler.h"
 #include "operation_handler.h"
 #include "errors.h"
-
 #include <stdbool.h>
 #include <ncurses.h>
 #include <menu.h>
@@ -425,9 +424,7 @@ void text_replace_UI()
     mvwprintw(windowMain, yPosition, 0, "%s", messageThird);
     wgetstr(windowMain, textNew);
 
-    // handle exits
-    if (exit_input(textNew))
-        return;
+    // no handle exit here because don't wanna ignore the user input
 
     yPosition += ceil((strlen(textNew) + strlen(messageThird)) / WIDTH_OPERATION) + 3;
 
