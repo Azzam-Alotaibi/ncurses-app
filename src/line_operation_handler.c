@@ -61,6 +61,9 @@ int line_insert(char *pathSource, int lineNumber, char *newLine)
         fclose(fileTemp);
         return error;
     }
+
+    // TODO if the lineNumber is 1 and it's empty file just append it anywhere
+    // TODO test for _temp.txt appears somewhere
     while ((character = fgetc(fileMain)) != EOF)
     {
         if (character == '\n')
