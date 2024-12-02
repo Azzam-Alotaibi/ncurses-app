@@ -221,7 +221,6 @@ _Bool choose_file_page(int choicesLength, const char *currentItemName)
         EnterKeyHandler function = edit_file_page;
         super_duper_recursion(function, choicesLength, choices);
     }
-    // TODO copy/delete file
     else if (strcmp(currentItemName, "Copy File") == 0)
     {
         operation_file_copy();
@@ -250,7 +249,6 @@ _Bool edit_file_page(int choicesLength, const char *currentItemName)
     {
         return false;
     }
-    // TODO append/insert/delete/show line
     if (strcmp(currentItemName, "Append Line") == 0)
     {
         operation_line_append_UI();

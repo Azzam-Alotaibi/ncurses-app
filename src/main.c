@@ -14,7 +14,7 @@ int main()
 {
 
     int choicesLength;
-    const int MINIMUM_WIDTH = 26;
+    const int MINIMUM_HIEGHT = 26;
 
     // NULL is needed for new_menu() to work. and it's considered best practice
     const char *choices[] = {"Choose File", "Create File", "Show Log", "Exit", NULL};
@@ -23,13 +23,12 @@ int main()
     choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
 
     init_ncruses();
-
-    // if (LINES < MINIMUM_WIDTH)
-    // {
-    //     endwin();
-    //     printf("Your window's height  is too narrow, sorry you can't open the app.\n");
-    //     exit(0);
-    // }
+    if (LINES < MINIMUM_HIEGHT)
+    {
+        endwin();
+        printf("Your window's height  is too narrow, sorry you can't open the app.\n");
+        exit(0);
+    }
 
     // setting the function pointer to the main page functionality
     EnterKeyHandler main_pg = main_page;
