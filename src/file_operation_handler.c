@@ -296,3 +296,54 @@ int file_count_lines_without_window(char *pathSource)
 
     return lineCount;
 }
+
+int file_encrypt(char *pathSource, char *key)
+{
+    // https://www.geeksforgeeks.org/xor-cipher/
+    FILE *fileMain, *fileTemp;
+    int charecter, error, lineCount, keyIndex = 0, keyLength;
+    char logMessage[400], fileTempName[] = "_temp.txt";
+
+    fileMain = fopen(pathSource, "r");
+    error = does_file_exist(fileMain, "r");
+    if (error != ERR_NONE)
+    {
+        fclose(fileMain);
+        return error;
+    }
+
+    fileTemp = fopen(fileTempName, "w");
+    error = does_file_exist(fileTemp, "w");
+    if (error != ERR_NONE)
+    {
+        fclose(fileMain);
+        fclose(fileTemp);
+        return error;
+    }
+
+    keyLength = strlen(key);
+
+    while ((charecter = fgetc(fileMain)) != EOF)
+    {
+        fputc(charecter ^ key[keyIndex], fileTemp);
+
+        keyIndex = (keyIndex + 1) % keyLength;
+    }
+    fclose(fileMain);
+    fclose(fileTemp);
+
+    // replace the main file with the temporary file that have been modified and
+    remove(pathSource);
+    rename(fileTempName, pathSource);
+
+    werase(windowMain);
+    wprintw(windowMain, "File Encrypted Successfully!");
+    wrefresh(windowMain);
+    wgetch(windowMain);
+
+    lineCount = file_count_lines_without_window(pathSource);
+    snprintf(logMessage, sizeof(logMessage), "encrypted the file: \"%s\", and it had %d lines", pathSource, lineCount);
+    log_operation(logMessage);
+
+    return ERR_NONE;
+}

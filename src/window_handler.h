@@ -46,5 +46,6 @@ void operation_line_UI(OperationLineHandler operationFunction);
 void operation_line_append_UI();
 void operation_line_insert_UI();
 void text_replace_UI();
+void file_encrypt_UI();
 
 #endif

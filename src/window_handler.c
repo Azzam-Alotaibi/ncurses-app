@@ -169,7 +169,9 @@ _Bool main_page(int optionsLength, const char *currentItemName)
     }
     if (strcmp(currentItemName, "Choose File") == 0)
     {
-        const char *options[] = {"Edit File", "Copy File", "Delete File", "Show File", "Line Count", "Go Back", NULL};
+        const char *options[] = {"Edit File", "Copy File", "Delete File", "Show File", "Line Count", "Encrypt File",
+                                 "Go Back",
+                                 NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
         optionsLength = sizeof(options) / sizeof(options[0]) - 1;
@@ -239,6 +241,10 @@ _Bool choose_file_page(int optionsLength, const char *currentItemName)
     {
         OperationFileHandler operation = file_count_lines;
         operation_file("count the lines in a", operation);
+    }
+    else if (strcmp(currentItemName, "Encrypt File") == 0)
+    {
+        file_encrypt_UI();
     }
     return true;
 }

@@ -321,8 +321,8 @@ void operation_line_UI(OperationLineHandler operationFunction)
     char pathSource[150], lineNumberString[10];
     char *endptr;
     int lineNumber, error, yPosition = 0;
-    char *messageSecond = "Please enter the line number: ";
-    char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    const char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    const char *messageSecond = "Please enter the line number: ";
 
     setup_window_operation();
     // [9]
@@ -390,9 +390,9 @@ void text_replace_UI()
     char pathSource[150], textOriginal[513], textNew[513];
     char *endptr;
     int lineNumber, error, yPosition = 0;
-    char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
-    char *messageSecond = "Please enter the text you'd like to replace (max 512 characters): ";
-    char *messageThird = "Please enter the new text (max 512 characters): ";
+    const char *messageFirst = "Please enter the file's path like this /home/etc/file.txt \npath: ";
+    const char *messageSecond = "Please enter the text you'd like to replace (max 512 characters): ";
+    const char *messageThird = "Please enter the new text (max 512 characters): ";
 
     setup_window_operation();
     // [9]
@@ -432,6 +432,54 @@ void text_replace_UI()
     yPosition += ceil((strlen(textNew) + strlen(messageThird)) / WIDTH_OPERATION) + 3;
 
     error = text_replace(pathSource, textOriginal, textNew);
+    print_error(yPosition, error);
+
+    destroy_window(windowMain);
+
+    // some text outside the new window isn't getting cleared when the app delete the window. This clear(); call fixes it.
+    // [11]
+    clear();
+    noecho();
+    refresh();
+}
+
+void file_encrypt_UI()
+{
+    char pathSource[150], key[513];
+    char *endptr;
+    int lineNumber, error, yPosition = 0;
+    const char *messageFirst = "Please enter the file's path to encrypt or decrypt it, the path should look like this /home/etc/file.txt \npath: ";
+    const char *messageSecond = "Please enter the key to encrypt/decrypt it (don't forget it!) (max 512 characters) \nkey: ";
+
+    setup_window_operation();
+    // [9]
+    echo();
+
+    // formatting the message string
+
+    // we used a string literal to avoid Wformat-security [12]
+    // print prompt the following prompt at the piont (0, 0)
+    mvwprintw(windowMain, yPosition, 0, "%s", messageFirst);
+    // passing the str pointer to make the function assign the user inputs to the str
+    wgetstr(windowMain, pathSource);
+
+    // handle exits
+    if (exit_input(pathSource))
+        return;
+
+    // calculate how many lines is the input and add that to the y position
+    yPosition += ceil((strlen(pathSource) + 6) / WIDTH_OPERATION) + 5;
+
+    mvwprintw(windowMain, yPosition, 0, "%s", messageSecond);
+    wgetstr(windowMain, key);
+
+    // handle exits
+    if (exit_input(key))
+        return;
+
+    yPosition += ceil((strlen(key) + 6) / WIDTH_OPERATION) + 3;
+
+    error = file_encrypt(pathSource, key);
     print_error(yPosition, error);
 
     destroy_window(windowMain);

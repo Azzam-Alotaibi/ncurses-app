@@ -10,6 +10,7 @@ int file_show(char *pathSource);
 int file_delete(char *pathSource);
 int file_count_lines(char *pathSource);
 int does_file_exist(FILE *file, char mode[1]);
+int file_encrypt(char *pathSource, char *key);
 
 // text manupilation functions
 int line_append(char *pathSource, char *newLine);
