@@ -55,12 +55,12 @@ void destroy_window(WINDOW *window)
 }
 
 // *APP DECISIONS 6* in the word file
-// this function sets up a new *MENU, and an array of *ITEM using the *choices array. It updates the variables using the pointers given so no need to return any value
+// this function sets up a new *MENU, and an array of *ITEM using the *options array. It updates the variables using the pointers given so no need to return any value
 
-void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices)
+void setup_menu(MENU **menu, ITEM ***items, int optionsLength, const char **options)
 {
 
-    *items = (ITEM **)calloc(choicesLength + 1, sizeof(ITEM *));
+    *items = (ITEM **)calloc(optionsLength + 1, sizeof(ITEM *));
     if (items == NULL)
     {
         perror("Failed to allocate memory for items");
@@ -68,11 +68,11 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
     }
 
     // create a new item out of every choice
-    for (int i = 0; i < choicesLength; i++)
+    for (int i = 0; i < optionsLength; i++)
     {
         // create an item in the ith element
         // the null is passed here since we don't need a description for our items
-        (*items)[i] = new_item(choices[i], NULL);
+        (*items)[i] = new_item(options[i], NULL);
         if ((*items)[i] == NULL)
         {
             perror("Failed to create menu item");
@@ -81,7 +81,7 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
     }
 
     // assign NULL to the end of the array so the new_menu() knows where to stop.
-    (*items)[choicesLength] = NULL;
+    (*items)[optionsLength] = NULL;
 
     // crate a new meun using the items list
     *menu = new_menu(*items);
@@ -94,7 +94,7 @@ void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choi
 
 // *APP DECISIONS 7* in the word file
 // this function sets up a new *WINDOW, using the *MENU provided in the argument. It updates the variables using the pointers given so no need to return any value
-void setup_window_menu(MENU **menu, int choicesLength)
+void setup_window_menu(MENU **menu, int optionsLength)
 {
 
     // center the window
@@ -112,7 +112,7 @@ void setup_window_menu(MENU **menu, int choicesLength)
     set_menu_win(*menu, windowMain);
 
     // create a sub-window for items and aling it within the box using derwin() [3]
-    set_menu_sub(*menu, derwin(windowMain, choicesLength, HEIGHT - 1, 1, 2));
+    set_menu_sub(*menu, derwin(windowMain, optionsLength, HEIGHT - 1, 1, 2));
 
     // to show the menu to the screen
     post_menu(*menu);
@@ -161,7 +161,7 @@ void clean_exit()
 }
 
 // pages
-_Bool main_page(int choicesLength, const char *currentItemName)
+_Bool main_page(int optionsLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Exit") == 0)
     {
@@ -169,14 +169,14 @@ _Bool main_page(int choicesLength, const char *currentItemName)
     }
     if (strcmp(currentItemName, "Choose File") == 0)
     {
-        const char *choices[] = {"Edit File", "Copy File", "Delete File", "Show File", "Line Count", "Go Back", NULL};
+        const char *options[] = {"Edit File", "Copy File", "Delete File", "Show File", "Line Count", "Go Back", NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
-        choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+        optionsLength = sizeof(options) / sizeof(options[0]) - 1;
 
         // [8]
         EnterKeyHandler function = choose_file_page;
-        super_duper_recursion(function, choicesLength, choices);
+        super_duper_recursion(function, optionsLength, options);
     }
     else if (strcmp(currentItemName, "Create File") == 0)
     {
@@ -204,7 +204,7 @@ _Bool main_page(int choicesLength, const char *currentItemName)
     return true;
 }
 
-_Bool choose_file_page(int choicesLength, const char *currentItemName)
+_Bool choose_file_page(int optionsLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Go Back") == 0)
     {
@@ -212,14 +212,14 @@ _Bool choose_file_page(int choicesLength, const char *currentItemName)
     }
     if (strcmp(currentItemName, "Edit File") == 0)
     {
-        const char *choices[] = {"Append Line", "Insert Line", "Delete Line", "Show Line", "Replace Text", "Go Back", NULL};
+        const char *options[] = {"Append Line", "Insert Line", "Delete Line", "Show Line", "Replace Text", "Go Back", NULL};
 
         // takes the size of the array and divide it by the first elements to get the full length without the NULL
-        choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+        optionsLength = sizeof(options) / sizeof(options[0]) - 1;
 
         // [8]
         EnterKeyHandler function = edit_file_page;
-        super_duper_recursion(function, choicesLength, choices);
+        super_duper_recursion(function, optionsLength, options);
     }
     else if (strcmp(currentItemName, "Copy File") == 0)
     {
@@ -243,7 +243,7 @@ _Bool choose_file_page(int choicesLength, const char *currentItemName)
     return true;
 }
 
-_Bool edit_file_page(int choicesLength, const char *currentItemName)
+_Bool edit_file_page(int optionsLength, const char *currentItemName)
 {
     if (strcmp(currentItemName, "Go Back") == 0)
     {

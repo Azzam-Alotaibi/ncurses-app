@@ -15,7 +15,7 @@ extern int WIDTH_MENU;
 extern int WIDTH_OPERATION;
 
 // a funciton pointer to change the layout in each page
-typedef bool (*EnterKeyHandler)(int choicesLength, const char *currentItemName);
+typedef bool (*EnterKeyHandler)(int optionsLength, const char *currentItemName);
 typedef int (*OperationFileHandler)(char *pathSource);
 typedef int (*OperationLineHandler)(char *pathSource, int lineNumber);
 
@@ -26,18 +26,18 @@ void init_ncruses();
 void clean_exit();
 void cleanup_menu(MENU *menu, ITEM **items, int itemsLength);
 void destroy_window(WINDOW *window);
-void setup_menu(MENU **menu, ITEM ***items, int choicesLength, const char **choices);
+void setup_menu(MENU **menu, ITEM ***items, int optionsLength, const char **options);
 void setup_window_operation();
-void setup_window_menu(MENU **menu, int choicesLength);
+void setup_window_menu(MENU **menu, int optionsLength);
 void edit_page();
 
 // pages
-_Bool main_page(int choicesLength, const char *currentItemName);
-_Bool choose_file_page(int choicesLength, const char *currentItemName);
-_Bool edit_file_page(int choicesLength, const char *currentItemName);
+_Bool main_page(int optionsLength, const char *currentItemName);
+_Bool choose_file_page(int optionsLength, const char *currentItemName);
+_Bool edit_file_page(int optionsLength, const char *currentItemName);
 
 // layout
-void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, const char **choices);
+void super_duper_recursion(EnterKeyHandler enterKeyHandler, int optionsLength, const char **options);
 
 // operation
 void operation_file(char *operationName, OperationFileHandler operation);

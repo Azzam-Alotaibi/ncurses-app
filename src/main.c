@@ -13,14 +13,14 @@
 int main()
 {
 
-    int choicesLength;
+    int optionsLength;
     const int MINIMUM_HIEGHT = 26;
 
     // NULL is needed for new_menu() to work. and it's considered best practice
-    const char *choices[] = {"Choose File", "Create File", "Show Log", "Exit", NULL};
+    const char *options[] = {"Choose File", "Create File", "Show Log", "Exit", NULL};
 
     // takes the size of the array and divide it by the first elements to get the full length without the NULL
-    choicesLength = sizeof(choices) / sizeof(choices[0]) - 1;
+    optionsLength = sizeof(options) / sizeof(options[0]) - 1;
 
     init_ncruses();
     if (LINES < MINIMUM_HIEGHT)
@@ -32,10 +32,10 @@ int main()
 
     // setting the function pointer to the main page functionality
     EnterKeyHandler main_pg = main_page;
-    super_duper_recursion(main_pg, choicesLength, choices);
+    super_duper_recursion(main_pg, optionsLength, options);
 }
 
-void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, const char **choices)
+void super_duper_recursion(EnterKeyHandler enterKeyHandler, int optionsLength, const char **options)
 {
     // The convention in C is has generally been to declare all such local variables at the top of a function [1]
     // *APP DECISIONS 5* in the word file
@@ -45,13 +45,13 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
     int input;
 
     /*for setting up the &menu and &items.
-     * also, we only send choices wihtout adressing the pointer because C automatically sends the first element's pointer of the array
+     * also, we only send options wihtout adressing the pointer because C automatically sends the first element's pointer of the array
      */
     // [6]
-    setup_menu(&menu, &items, choicesLength, choices);
+    setup_menu(&menu, &items, optionsLength, options);
 
     // for setting up the window.
-    setup_window_menu(&menu, choicesLength);
+    setup_window_menu(&menu, optionsLength);
 
     isRunning = true;
     // this is responsible for the menu navigation using menu_driver()
@@ -66,7 +66,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
         switch (input)
         {
         case KEY_DOWN:
-            if (strcmp(currentItemName, choices[choicesLength - 1]) == 0)
+            if (strcmp(currentItemName, options[optionsLength - 1]) == 0)
             {
                 // If on the last item, wrap to the first item hehe
                 menu_driver(menu, REQ_FIRST_ITEM);
@@ -76,7 +76,7 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             menu_driver(menu, REQ_DOWN_ITEM);
             break;
         case KEY_UP:
-            if (strcmp(currentItemName, choices[0]) == 0)
+            if (strcmp(currentItemName, options[0]) == 0)
             {
                 // If on the first item, wrap to the last item
                 menu_driver(menu, REQ_LAST_ITEM);
@@ -94,19 +94,19 @@ void super_duper_recursion(EnterKeyHandler enterKeyHandler, int choicesLength, c
             menu_driver(menu, REQ_FIRST_ITEM);
             break;
         case 10: // 10 is the enter key for wgetch() / getch()
-            cleanup_menu(menu, items, choicesLength);
+            cleanup_menu(menu, items, optionsLength);
             destroy_window(windowMain);
 
-            isRunning = enterKeyHandler(choicesLength, currentItemName);
+            isRunning = enterKeyHandler(optionsLength, currentItemName);
 
-            // for setting up the menu, items. and we only send choices wihtout adressing the pointer because C automatically sends the first element's pointer
-            setup_menu(&menu, &items, choicesLength, choices);
+            // for setting up the menu, items. and we only send options wihtout adressing the pointer because C automatically sends the first element's pointer
+            setup_menu(&menu, &items, optionsLength, options);
 
             // for setting up the window.
-            setup_window_menu(&menu, choicesLength);
+            setup_window_menu(&menu, optionsLength);
             break;
         case 'q':
-            cleanup_menu(menu, items, choicesLength);
+            cleanup_menu(menu, items, optionsLength);
             destroy_window(windowMain);
             clean_exit();
             break;
