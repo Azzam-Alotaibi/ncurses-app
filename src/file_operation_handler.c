@@ -299,7 +299,6 @@ int file_count_lines_without_window(char *pathSource)
 
 int file_encrypt(char *pathSource, char *key)
 {
-    // https://www.geeksforgeeks.org/xor-cipher/
     FILE *fileMain, *fileTemp;
     int charecter, error, lineCount, keyIndex = 0, keyLength;
     char logMessage[400], fileTempName[] = "_temp.txt";
@@ -325,6 +324,7 @@ int file_encrypt(char *pathSource, char *key)
 
     while ((charecter = fgetc(fileMain)) != EOF)
     {
+        // [16]
         fputc(charecter ^ key[keyIndex], fileTemp);
 
         keyIndex = (keyIndex + 1) % keyLength;
